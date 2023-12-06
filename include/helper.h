@@ -13,21 +13,21 @@ bool rekkit = false;
 unsigned long ex_millis = 0;
 int blink_state = 0;
 
-void blink(int t)
-{
-  unsigned long time = millis();
-  if (time - ex_millis >= t)
-  {
-    // save the last time you blinked the LED
-    ex_millis = time;
-    // if the LED is off turn it on and vice-versa:
-    blink_state = not blink_state;
-    // set the LED with the blink_state of the variable:
-    digitalWrite(LED_BUILTIN, blink_state);
-  }
-}
+// void blink(int t)
+// {
+//   unsigned long time = millis();
+//   if (time - ex_millis >= t)
+//   {
+//     // save the last time you blinked the LED
+//     ex_millis = time;
+//     // if the LED is off turn it on and vice-versa:
+//     blink_state = not blink_state;
+//     // set the LED with the blink_state of the variable:
+//     digitalWrite(LED_BUILTIN, blink_state);
+//   }
+// }
 
-void _blink(int x, int t1, int t2, int t3)
+void blink(int x, int t1, int t2, int t3)
 {
   for (int i = 1; i <= x; ++i)
   {
@@ -55,7 +55,7 @@ void print_ir()
 void good_night()
 {
   Serial.println("Bye Bye, Take Care");
-  _blink(10, 100, 50, 3000);
+  blink(10, 100, 50, 3000);
 }
 
 bool btn_hold(int t)
