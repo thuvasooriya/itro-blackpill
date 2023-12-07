@@ -2,8 +2,8 @@
 #include <color_sensor.h>
 #include <pins.h>
 #include <Servo.h>
-#define SER_L PA3
-#define SER_R PA2
+#define SER_L PA2
+#define SER_R PA1
 // logic when not using USB
 #define HWUART // comment this if you want to connect to USBSerial
 #if defined(HWUART)
