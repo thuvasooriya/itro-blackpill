@@ -1,6 +1,5 @@
 #include <Arduino.h>
 #include <pins.h>
-// #include <display.h>
 
 // logic when not using USB
 #define HWUART // comment this if you want to connect to USBSerial
@@ -147,4 +146,3 @@ int get_deviation()
   }
   return deviation;
 }
-
