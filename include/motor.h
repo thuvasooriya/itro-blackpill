@@ -113,7 +113,6 @@ void brake_free()
   delay(20);
 }
 
-
 void U_turn()
 {
   countA = 0;
@@ -293,6 +292,7 @@ void sharpRight2(int spd)
 
 void sharpLeft3(int spd)
 {
+  Serial.println("left turn3");
   countA = 0;
   while (countA < 3900)
   {
@@ -451,6 +451,7 @@ void handle_edge_cases()
     if (junction)
     {
       junction_detection_count++;
+            Serial.println("left turn2");
       sharpLeft2(avg_speed);
     }
   }

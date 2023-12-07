@@ -21,3 +21,6 @@
 #define IR3 PB14
 #define IR4 PB15
 #define IR5 PA8
+
+// Microphone
+#define SND PA1

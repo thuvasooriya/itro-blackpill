@@ -67,6 +67,7 @@ void startToFs()
 
 void read_tof_sensors()
 {   
+    startToFs();
     TCA9548A(1);
     lox1.rangingTest(&measure1, false);
 

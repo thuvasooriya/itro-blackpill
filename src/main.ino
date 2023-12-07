@@ -1,6 +1,7 @@
 #include <motor.h>
 #include <color_sensor.h>
 #include <tof_2.h>
+#include <sound.h>
 
 void line_following();
 void line_following_only();
@@ -12,6 +13,11 @@ String box_color = "";
 String path_color = "";
 int tof1, tof2, tof3, tof4, tof5;
 unsigned long time;
+
+// Adafruit_VL53L0X lox = Adafruit_VL53L0X();
+
+// // this holds the measurement
+// VL53L0X_RangingMeasurementData_t measure;
 
 void setup()
 {
@@ -41,6 +47,11 @@ void setup()
   brake_fast();
   Wire.begin();
   startToFs();
+  //   if (!lox.begin())
+  // {
+  //     Serial.println(F("Failed to boot VL53L0X 1"));
+  //     _blink(5, 300, 100, 1000);
+  // }
 }
 
 void loop()
@@ -54,6 +65,22 @@ void loop()
     switch (level)
     {
     case 0:
+
+    //     read_tof_sensors();
+    // Serial.print(sensor1);
+    // Serial.print(" ");
+    // Serial.print(sensor2);    
+    // Serial.print(" ");
+    // Serial.print(sensor3);
+    // Serial.print(" ");
+    // Serial.print(sensor4);
+    // Serial.print(" ");
+    // Serial.print(sensor5);
+    // Serial.print(" ");
+    // Serial.print(sensor6);
+    // Serial.println(" ");
+    // delay(200);
+
       // line_following_only();
       // time = millis();
       // if (time - ex_millis >= 100)
@@ -61,13 +88,22 @@ void loop()
       //   ex_millis = time;
       //   wall_follow();
       // }
+     ex_millis = millis();
+     while(true)
+     {
+        line_following();
+        time = millis();
+        if ((time - ex_millis) > 500){
+          break;
+        }
 
-      // line_following_only();
-      // delay(500);
-      // Serial.println("line following end1");
-      // brake_fast();
-      // wall_follow();
-        // pick_box();
+     }
+      Serial.println("line following end1");
+      brake_fast();
+      delay(1000);
+      wall_follow();
+
+   //   pick_box();
       break;
     case 2:
       break;
@@ -275,7 +311,6 @@ void wall_follow()
         Serial.println("Third");
         if (scanDir == "left") {
                                   Serial.println("sec left if");
-        while (tof5 < 200){
             if (tof5 < 80){
                // scanLeft(1);
                 delay(10);
@@ -295,7 +330,6 @@ void wall_follow()
         delay(1000);
        // scanLeft(3);
         } else if (scanDir == "right"){
-                  while (tof5 < 200){
             if (tof5 < 80){
               //  scanRight(1);
                 delay(10);
@@ -303,7 +337,6 @@ void wall_follow()
             else if (tof5 > 80){
               //  scanLeft(1);
                 delay(10);
-            }
             go_cms(4);
         }
         while(digitalRead(IR3) == 0)
@@ -316,4 +349,12 @@ void wall_follow()
             //scanRight(3);
         }
     }
+
+void navigate_sound()
+{
+    while (soundLevel() < 200)
+    {
+        line_following();
+    } 
 }
+
