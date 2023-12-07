@@ -13,10 +13,6 @@ int cm_counter = 0;
 int cm_max = 200;
 int chk_point_t = 4;
 
-int leftCount, rightCount;
-int prevLeftCount = 0;
-int prevRightCount = 0;
-
 int trn90 = 5800;
 
 // ### pid variables ###
@@ -117,39 +113,6 @@ void brake_free()
   delay(20);
 }
 
-void sharpRight(int spd)
-{
-  countA = 0;
-  while (countA < 5000)
-  {
-    set_forward();
-    set_speed(spd, 0);
-  }
-  brake_free();
-}
-
-void sharpLeft(int spd)
-{
-  countB = 0;
-  while (countB < 2500)
-  {
-    set_forward();
-    set_speed(0, spd);
-  }
-  brake_free();
-}
-
-void sharp_right(int spd)
-{
-  set_cw();
-  set_speed(spd, 0);
-}
-
-void sharp_left(int spd)
-{
-  set_ccw();
-  set_speed(0, spd);
-}
 
 void U_turn()
 {
@@ -246,16 +209,16 @@ void scan(int scanTimes)
   align_center();
 }
 
-void go_5cms(int i)
-{
-  countA = 0;
-  while (countA < (2000 * i))
-  {
-    set_forward();
-    set_speed(125, 120);
-  }
-  brake_fast();
-}
+// void go_5cms(int i)
+// {
+//   countA = 0;
+//   while (countA < (2000 * i))
+//   {
+//     set_forward();
+//     set_speed(125, 120);
+//   }
+//   brake_fast();
+// }
 
 void go_cms(int i)
 {
@@ -268,10 +231,21 @@ void go_cms(int i)
   brake_fast();
 }
 
-void reverse_5cms(int i)
+// void reverse_5cms(int i)
+// {
+//   countA = 0;
+//   while (countA < (2000 * i))
+//   {
+//     set_back();
+//     set_speed(125, 120);
+//   }
+//   brake_fast();
+// }
+
+void reverse_cms(int i)
 {
   countA = 0;
-  while (countA < (2000 * i))
+  while (countA < (400 * i))
   {
     set_back();
     set_speed(125, 120);
@@ -341,34 +315,34 @@ void sharpRight3(int spd)
   delay(100);
 }
 
-void checkpoint_crossing()
-{
-  while (allwhite())
-  {
-    set_forward();
-    set_speed(avg_speed, avg_speed);
-  }
-  int cttt = 0;
-  while (((get_deviation() < -4) or (get_deviation() > 4)) and (cttt < 5))
-  {
-    if (allwhite())
-    {
-      checkpoint_crossing();
-    }
-    scanLeft(1);
-    cttt++;
-  }
-  cttt = 0;
-  while (((get_deviation() < -4) or (get_deviation() > 4)) and (cttt < 10))
-  {
-    if (allwhite())
-    {
-      checkpoint_crossing();
-    }
-    scanLeft(1);
-    cttt++;
-  }
-}
+// void checkpoint_crossing()
+// {
+//   while (allwhite())
+//   {
+//     set_forward();
+//     set_speed(avg_speed, avg_speed);
+//   }
+//   int cttt = 0;
+//   while (((get_deviation() < -4) or (get_deviation() > 4)) and (cttt < 5))
+//   {
+//     if (allwhite())
+//     {
+//       checkpoint_crossing();
+//     }
+//     scanLeft(1);
+//     cttt++;
+//   }
+//   cttt = 0;
+//   while (((get_deviation() < -4) or (get_deviation() > 4)) and (cttt < 10))
+//   {
+//     if (allwhite())
+//     {
+//       checkpoint_crossing();
+//     }
+//     scanLeft(1);
+//     cttt++;
+//   }
+// }
 
 float calc_pid(int e)
 {
@@ -449,29 +423,6 @@ void handle_edge_cases()
   {
     Serial.println("right branch");
     // // junction or right turn detected
-    // set_forward();
-    // analogWrite(PWMA, cm_speed);
-    // analogWrite(PWMB, cm_speed);
-    // // brake_fast();
-    // // delay(200);
-    // // delay(225);
-    // // brake_fast();
-    // delay(cm_delay);
-    // if (allblack())
-    // {
-    //   countA = 0;
-    //   while (countA < trn90)
-    //   {
-    //     sharp_right(100);
-    //   }
-    //   brake_free();
-    //   // delay(200);
-    // }
-    // else if(digitalRead(IR3==1)){
-    //   set_forward();
-    //   set_speed(avg_speed,avg_speed);
-    //   delay(200);
-    // }
     countA = 0;
     while (countA < 5400)
     {
@@ -491,30 +442,6 @@ void handle_edge_cases()
     Serial.println("left branch");
     // left turn detected
     sharpLeft2(avg_speed);
-    // brake_fast();
-    // delay(200);
-    // set_forward();
-    // analogWrite(PWMA, 150);
-    // analogWrite(PWMB, 150);
-    // delay(cm_delay);
-    // brake_fast();
-    // if (allblack())
-    // {
-    //   countB = 0;
-    //   while (countB < trn90)
-    //   {
-    //     sharp_left(125);
-    //   }
-    //   brake_free();
-    //   // delay(200);
-    // }
-    // countB = 0;
-    // while (countB < trn90)
-    // {
-    //   sharp_left(125);
-    // }
-    // brake_free();
-    // delay(200);
     cm_counter = 0;
   }
   else if (allwhite)
@@ -528,123 +455,3 @@ void handle_edge_cases()
     }
   }
 }
-
-
-// void driveStraight(int speed) {
-
-//   // use wheel encoders to drive straight continuously
-
-//   // amount to offset motor powers to drive straight
-//   int leftspeed = speed; 
-//   int rightspeed = speed;
-//   int offset = 1;
-//   prevLeftCount = 0;
-//   prevRightCount = 0 ;
-//   leftCount = 0;
-//   rightCount = 0;
-//   set_forward();
-//   set_speed(speed,speed);
-//   while(true){
-//       // leftCount = countA;
-//       // rightCount = countB;
-      
-//       // int leftDiff = leftCount - prevLeftCount;
-//       // int rightDiff = rightCount - prevRightCount;
-
-//       // prevLeftCount = leftCount;
-//       // prevRightCount = rightCount;
-//       countA =0;
-//       countB =0;
-//       delay(50);
-
-//       if (countA > countB) {
-//         leftspeed = leftspeed - offset;
-//         rightspeed = rightspeed + offset;
-//       }
-
-//       else if (countA < countB) {
-//         leftspeed = leftspeed +  offset;
-//         rightspeed = rightspeed-   offset;
-//       }
-
-//       set_speed(leftspeed,rightspeed);
-//       Serial.print(leftspeed);
-//       Serial.print(" ");
-//       Serial.println(rightspeed);
-//   }
-// }
-
-// void driveDistance(float distance) {
-
-
-//     int leftSpeed = 125;
-//     int rightSpeed = 125;
-//     set_forward();
-    
-//     // amount to offset motor powers to drive straight
-//     int offset = 1;
-
-//     // if negative distance, make motor powers & offset also negative
-//     if (distance < 0) {
-//         set_back();
-//     }
-
-//     // variables for tracking wheel encoder counts
-//     leftCount = 0;
-//     rightCount = 0;
-//     prevLeftCount = 0;
-//     prevRightCount = 0;
-//     int leftDiff, rightDiff;
-
-//     int gear_ratio = 50;
-//     float countsPerRev = gear_ratio * 7;
-//     float wheelDiam = 6.4; //cm
-//     float wheelCirc = PI * wheelDiam; // wheel circumference = 3.14 x 2.56 in = 8.04 in
-
-
-//     // based on distance, calculate number of wheel revolutions
-//     float numRev = distance / wheelCirc;
-
-//     // calculate target encoder count
-//     float targetCount = numRev * countsPerRev;
-
-//     // reset encoder counters and start driving
-//     countA = 0;
-//     countB = 0;
-//     delay(100);
-//     set_speed(leftSpeed, rightSpeed);
-
-//     // keeps looping while right encoder count less than target count
-//     while (abs(rightCount) < abs(targetCount)) {
-
-//         // get current wheel encoder counts
-//         leftCount = countA;
-//         rightCount = countB;
-
-//         // calculate increase in count from previous reading
-//         leftDiff = abs(leftCount - prevLeftCount);
-//         rightDiff = abs(rightCount - prevRightCount);
-
-//         // store current counts as "previous" counts for next reading
-//         prevLeftCount = leftCount;
-//         prevRightCount = rightCount;
-
-//         // adjust left & right motor powers to keep counts similar (drive straight)
-
-//         // if left rotated more than right, slow down left & speed up right
-//         if (leftDiff > rightDiff) {
-//             leftSpeed = leftSpeed - offset;
-//             rightSpeed = rightSpeed + offset;
-//         }
-//         // else if right rotated more than left, speed up left & slow down right
-//         else if (leftDiff < rightDiff) {
-//             leftSpeed = leftSpeed + offset;
-//             rightSpeed = rightSpeed - offset;
-//         }
-//         set_speed(leftSpeed, rightSpeed);
-//         delay(10); 
-//     }
-
-//     brake_fast();
-//     delay(500);
-// }

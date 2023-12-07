@@ -190,11 +190,11 @@ void pick_box()
     }
     cctt++;
   }
-  go_5cms(2);
+  go_cms(10);
   // lift_bok();
   // detect_box_color();
   box_color = "red";
-  reverse_5cms(2);
+  reverse_cms(10);
   delay(2000);
   align_center();
   delay(1000);
