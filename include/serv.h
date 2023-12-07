@@ -38,8 +38,8 @@ void loop() {
   //   delay(15);                       // waits 15ms for the servo to reach the position
   // }
 
-  // Serial.println(myservo.read());
-  // delay(200);
+  Serial.println(rot_servo.read());
+  delay(200);
 
   
 }
