@@ -109,10 +109,10 @@ void line_following_only()
   delay(20);
 }
 
-void go_5cms_line(int i)
+void go_cms_line(int i)
 {
   countA = 0;
-  while (countA < (2000 * i))
+  while (countA < (400 * i))
   {
     set_forward();
     set_speed(avg_speed, avg_speed);
@@ -219,24 +219,44 @@ void wall_follow()
 {   String scanDir;
     read_tof_sensors();
     tof1 = sensor1; tof2 = sensor2; tof3 = sensor3; tof4 = sensor4; tof5 = sensor5; //tof1 = sensor1; 
+    // read_tof_sensors();
+Serial.print(tof1);
+Serial.print(" ");
+Serial.print(tof2);    
+Serial.print(" ");
+Serial.print(tof3);
+Serial.print(" ");
+Serial.print(tof4);
+Serial.print(" ");
+Serial.print(tof5);
+// Serial.print(" ");
+// Serial.print(sensor6);
+Serial.println(" ");
+delay(200);
     if ((tof1 < 100) or (tof2 < 100) or (tof3 < 100) or (tof4 < 100))
-    {
+    { 
+        Serial.println("Inside first brake ");
         brake_fast();
         delay(1000);
          read_tof_sensors();
          tof1 = sensor1; tof2 = sensor2; tof3 = sensor3; tof4 = sensor4; tof5 = sensor5; //tof1 = sensor1; 
         //readTof
+                Serial.println("Second Read");
         if ((tof1 < tof2) or (tof2 < tof3) or (tof3 < tof4)){
             scanLeft(3);
             scanDir = "left";
+            Serial.println("ScaLe");
 
         }
         else if ((tof1 > tof2) or (tof2 > tof3) or (tof3 > tof4))
         {
             scanRight(3);
             scanDir = "Right";
+                        Serial.println("ScaRight");
         }
         //
+        if (scanDir == "left") {
+                                  Serial.println("sec left if");
         while (tof5 < 200){
             if (tof5 < 80){
                 scanLeft(1);
@@ -255,16 +275,33 @@ void wall_follow()
         }
         brake_fast();
         delay(1000);
-        if (scanDir == "left") {
-            scanLeft(3);
+        scanLeft(3);
         } else if (scanDir == "right"){
+                  while (tof5 < 200){
+            if (tof5 < 80){
+                scanRight(1);
+                delay(10);
+            }
+            else if (tof5 > 80){
+                scanLeft(1);
+                delay(10);
+            }
+            go_cms(4);
+        }
+        while(digitalRead(IR3) == 0)
+        {
+            set_forward();
+            set_speed(80,80);
+        }
+        brake_fast();
+        delay(1000);
             scanRight(3);
         }
     }
     else{
         line_following_only();
-        delay(80);
-        brake_fast();
+        delay(200);
+        brake_free();
         delay(200);
 }
 }
