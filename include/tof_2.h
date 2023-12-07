@@ -61,13 +61,13 @@ void startToFs()
             ;
     }
 
-    TCA9548A(6);
-    if (!lox6.begin())
-    {
-        Serial.println(F("Failed to boot VL53L0X 6"));
-        while (1)
-            ;
-    }
+    // TCA9548A(6);
+    // if (!lox6.begin())
+    // {
+    //     Serial.println(F("Failed to boot VL53L0X 6"));
+    //     while (1)
+    //         ;
+    // }
 }
 
 void read_tof_sensors()
@@ -138,19 +138,19 @@ void read_tof_sensors()
     {
         Serial.println(" out of range ");
     }
-    TCA9548A(6);
-    lox6.rangingTest(&measure1, false);
+    // TCA9548A(6);
+    // lox6.rangingTest(&measure1, false);
 
-    if (measure1.RangeStatus != 4)
-    { // phase failures have incorrect data
-        Serial.print("Distance (mm): ");
-        sensor6 = measure6.RangeMilliMeter;
-        Serial.println(measure6.RangeMilliMeter);
-    }
-    else
-    {
-        Serial.println(" out of range ");
-    }
+    // if (measure1.RangeStatus != 4)
+    // { // phase failures have incorrect data
+    //     Serial.print("Distance (mm): ");
+    //     sensor6 = measure6.RangeMilliMeter;
+    //     Serial.println(measure6.RangeMilliMeter);
+    // }
+    // else
+    // {
+    //     Serial.println(" out of range ");
+    // }
 }
 
 

@@ -13,7 +13,9 @@ int cm_counter = 0;
 int cm_max = 200;
 int chk_point_t = 4;
 
-int leftCount, rightCount, prevLeftCount, prevRightCount;
+int leftCount, rightCount;
+int prevLeftCount = 0;
+int prevRightCount = 0;
 
 int trn90 = 5800;
 
@@ -248,6 +250,17 @@ void go_5cms(int i)
 {
   countA = 0;
   while (countA < (2000 * i))
+  {
+    set_forward();
+    set_speed(125, 120);
+  }
+  brake_fast();
+}
+
+void go_cms(int i)
+{
+  countA = 0;
+  while (countA < (400 * i))
   {
     set_forward();
     set_speed(125, 120);
@@ -517,110 +530,121 @@ void handle_edge_cases()
 }
 
 
-void driveStraight(int speed) {
+// void driveStraight(int speed) {
 
-  // use wheel encoders to drive straight continuously
+//   // use wheel encoders to drive straight continuously
 
-  // amount to offset motor powers to drive straight
-  int leftspeed, rightspeed = speed;
-  int offset = 1;
-  set_forward();
-  set_speed(lsp,rsp);
+//   // amount to offset motor powers to drive straight
+//   int leftspeed = speed; 
+//   int rightspeed = speed;
+//   int offset = 1;
+//   prevLeftCount = 0;
+//   prevRightCount = 0 ;
+//   leftCount = 0;
+//   rightCount = 0;
+//   set_forward();
+//   set_speed(speed,speed);
+//   while(true){
+//       // leftCount = countA;
+//       // rightCount = countB;
+      
+//       // int leftDiff = leftCount - prevLeftCount;
+//       // int rightDiff = rightCount - prevRightCount;
 
-  leftCount = countA;
-  rightCount = countB;
-  
-  int leftDiff = leftCount - prevLeftCount;
-  int rightDiff = rightCount - prevRightCount;
+//       // prevLeftCount = leftCount;
+//       // prevRightCount = rightCount;
+//       countA =0;
+//       countB =0;
+//       delay(50);
 
-  prevLeftCount = leftCount;
-  prevRightCount = rightCount;
+//       if (countA > countB) {
+//         leftspeed = leftspeed - offset;
+//         rightspeed = rightspeed + offset;
+//       }
 
-  if (leftDiff > rightDiff) {
-    leftspeed = leftspeed - offset;
-    rightspeed = rightspeed + offset;
-  }
+//       else if (countA < countB) {
+//         leftspeed = leftspeed +  offset;
+//         rightspeed = rightspeed-   offset;
+//       }
 
-  else if (leftDiff < rightDiff) {
-    leftspeed = leftspeed +  offset;
-    rightspeed = rightspeed- offset;
-  }
+//       set_speed(leftspeed,rightspeed);
+//       Serial.print(leftspeed);
+//       Serial.print(" ");
+//       Serial.println(rightspeed);
+//   }
+// }
 
-  set_speed(leftspeed,rightspeed);
-  delay(10);
-}
-
-void driveDistance(float distance) {
+// void driveDistance(float distance) {
 
 
-    int leftSpeed = 125;
-    int rightSpeed = 125;
-    set_forward();
+//     int leftSpeed = 125;
+//     int rightSpeed = 125;
+//     set_forward();
     
-    // amount to offset motor powers to drive straight
-    int offset = 1;
+//     // amount to offset motor powers to drive straight
+//     int offset = 1;
 
-    // if negative distance, make motor powers & offset also negative
-    if (distance < 0) {
-        set_back();
-    }
+//     // if negative distance, make motor powers & offset also negative
+//     if (distance < 0) {
+//         set_back();
+//     }
 
-    // variables for tracking wheel encoder counts
-    leftCount = 0;
-    rightCount = 0;
-    prevLeftCount = 0;
-    prevRightCount = 0;
-    int leftDiff, rightDiff;
+//     // variables for tracking wheel encoder counts
+//     leftCount = 0;
+//     rightCount = 0;
+//     prevLeftCount = 0;
+//     prevRightCount = 0;
+//     int leftDiff, rightDiff;
 
-    int gear_ratio = 50;
-    float countsPerRev = gear_ratio * 7;
-    float wheelDiam = 6.4; //cm
-    float wheelCirc = PI * wheelDiam; // wheel circumference = 3.14 x 2.56 in = 8.04 in
+//     int gear_ratio = 50;
+//     float countsPerRev = gear_ratio * 7;
+//     float wheelDiam = 6.4; //cm
+//     float wheelCirc = PI * wheelDiam; // wheel circumference = 3.14 x 2.56 in = 8.04 in
 
 
-    // based on distance, calculate number of wheel revolutions
-    float numRev = distance / wheelCirc;
+//     // based on distance, calculate number of wheel revolutions
+//     float numRev = distance / wheelCirc;
 
-    // calculate target encoder count
-    float targetCount = numRev * countsPerRev;
+//     // calculate target encoder count
+//     float targetCount = numRev * countsPerRev;
 
-    // reset encoder counters and start driving
-    countA = 0;
-    countB = 0;
-    delay(100);
-    set_speed(leftSpeed, rightSpeed);
+//     // reset encoder counters and start driving
+//     countA = 0;
+//     countB = 0;
+//     delay(100);
+//     set_speed(leftSpeed, rightSpeed);
 
-    // keeps looping while right encoder count less than target count
-    while (abs(rightCount) < abs(targetCount)) {
+//     // keeps looping while right encoder count less than target count
+//     while (abs(rightCount) < abs(targetCount)) {
 
-        // get current wheel encoder counts
-        leftCount = countA;
-        rightCount = countB;
+//         // get current wheel encoder counts
+//         leftCount = countA;
+//         rightCount = countB;
 
-        // calculate increase in count from previous reading
-        leftDiff = abs(leftCount - prevLeftCount);
-        rightDiff = abs(rightCount - prevRightCount);
+//         // calculate increase in count from previous reading
+//         leftDiff = abs(leftCount - prevLeftCount);
+//         rightDiff = abs(rightCount - prevRightCount);
 
-        // store current counts as "previous" counts for next reading
-        prevLeftCount = leftCount;
-        prevRightCount = rightCount;
+//         // store current counts as "previous" counts for next reading
+//         prevLeftCount = leftCount;
+//         prevRightCount = rightCount;
 
-        // adjust left & right motor powers to keep counts similar (drive straight)
+//         // adjust left & right motor powers to keep counts similar (drive straight)
 
-        // if left rotated more than right, slow down left & speed up right
-        if (leftDiff > rightDiff) {
-            leftSpeed = leftSpeed - offset;
-            rightSpeed = rightSpeed + offset;
-        }
-        // else if right rotated more than left, speed up left & slow down right
-        else if (leftDiff < rightDiff) {
-            leftSpeed = leftSpeed + offset;
-            rightSpeed = rightSpeed - offset;
-        }
-        set_speed(leftSpeed, rightSpeed);
-        delay(10); 
-    }
+//         // if left rotated more than right, slow down left & speed up right
+//         if (leftDiff > rightDiff) {
+//             leftSpeed = leftSpeed - offset;
+//             rightSpeed = rightSpeed + offset;
+//         }
+//         // else if right rotated more than left, speed up left & slow down right
+//         else if (leftDiff < rightDiff) {
+//             leftSpeed = leftSpeed + offset;
+//             rightSpeed = rightSpeed - offset;
+//         }
+//         set_speed(leftSpeed, rightSpeed);
+//         delay(10); 
+//     }
 
-    brake_fast();
-    delay(500);
-}
+//     brake_fast();
+//     delay(500);
+// }
