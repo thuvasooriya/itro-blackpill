@@ -11,6 +11,7 @@ void go_5cms_line(int i);
 String box_color = "";
 String path_color = "";
 int tof1, tof2, tof3, tof4, tof5;
+unsigned long time;
 
 void setup()
 {
@@ -35,6 +36,7 @@ void setup()
   pinMode(encoderInB, INPUT);
   attachInterrupt(digitalPinToInterrupt(encoderInB), encIncrementB, RISING);
 
+
   Serial.begin(9600);
   brake_fast();
   Wire.begin();
@@ -52,9 +54,21 @@ void loop()
     switch (level)
     {
     case 0:
-    wall_follow();
-      // pick_box();
-    break;
+      // line_following_only();
+      // time = millis();
+      // if (time - ex_millis >= 100)
+      // {
+      //   ex_millis = time;
+      //   wall_follow();
+      // }
+
+      // line_following_only();
+      // delay(500);
+      // Serial.println("line following end1");
+      // brake_fast();
+      // wall_follow();
+        // pick_box();
+      break;
     case 2:
       break;
     default:
@@ -217,56 +231,60 @@ void pick_box()
 
 void wall_follow()
 {   String scanDir;
+    Serial.println("wall check");
     read_tof_sensors();
+    Serial.println("finished reading");
     tof1 = sensor1; tof2 = sensor2; tof3 = sensor3; tof4 = sensor4; tof5 = sensor5; //tof1 = sensor1; 
     // read_tof_sensors();
-Serial.print(tof1);
-Serial.print(" ");
-Serial.print(tof2);    
-Serial.print(" ");
-Serial.print(tof3);
-Serial.print(" ");
-Serial.print(tof4);
-Serial.print(" ");
-Serial.print(tof5);
-// Serial.print(" ");
-// Serial.print(sensor6);
-Serial.println(" ");
-delay(200);
+    Serial.print(tof1);
+    Serial.print(" ");
+    Serial.print(tof2);    
+    Serial.print(" ");
+    Serial.print(tof3);
+    Serial.print(" ");
+    Serial.print(tof4);
+    Serial.print(" ");
+    Serial.print(tof5);
+    // Serial.print(" ");
+    // Serial.print(sensor6);
+    Serial.println(" ");
     if ((tof1 < 100) or (tof2 < 100) or (tof3 < 100) or (tof4 < 100))
     { 
         Serial.println("Inside first brake ");
         brake_fast();
         delay(1000);
-         read_tof_sensors();
-         tof1 = sensor1; tof2 = sensor2; tof3 = sensor3; tof4 = sensor4; tof5 = sensor5; //tof1 = sensor1; 
+        read_tof_sensors();
+        tof1 = sensor1; tof2 = sensor2; tof3 = sensor3; tof4 = sensor4; tof5 = sensor5; //tof1 = sensor1; 
+        Serial.println("Second Read Finished");
         //readTof
-                Serial.println("Second Read");
         if ((tof1 < tof2) or (tof2 < tof3) or (tof3 < tof4)){
-            scanLeft(3);
+        Serial.println("ifff 1");
+           // scanLeft(3);
             scanDir = "left";
             Serial.println("ScaLe");
 
         }
         else if ((tof1 > tof2) or (tof2 > tof3) or (tof3 > tof4))
         {
-            scanRight(3);
+        Serial.println("ifff 2");
+          //  scanRight(3);
             scanDir = "Right";
                         Serial.println("ScaRight");
         }
         //
+        Serial.println("Third");
         if (scanDir == "left") {
                                   Serial.println("sec left if");
         while (tof5 < 200){
             if (tof5 < 80){
-                scanLeft(1);
+               // scanLeft(1);
                 delay(10);
             }
             else if (tof5 > 80){
-                scanRight(1);
+              //  scanRight(1);
                 delay(10);
             }
-            go_cms(4);
+          //  go_cms(4);
         }
         while(digitalRead(IR3) == 0)
         {
@@ -275,15 +293,15 @@ delay(200);
         }
         brake_fast();
         delay(1000);
-        scanLeft(3);
+       // scanLeft(3);
         } else if (scanDir == "right"){
                   while (tof5 < 200){
             if (tof5 < 80){
-                scanRight(1);
+              //  scanRight(1);
                 delay(10);
             }
             else if (tof5 > 80){
-                scanLeft(1);
+              //  scanLeft(1);
                 delay(10);
             }
             go_cms(4);
@@ -295,13 +313,7 @@ delay(200);
         }
         brake_fast();
         delay(1000);
-            scanRight(3);
+            //scanRight(3);
         }
     }
-    else{
-        line_following_only();
-        delay(200);
-        brake_free();
-        delay(200);
-}
 }

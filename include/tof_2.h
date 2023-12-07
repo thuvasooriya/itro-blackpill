@@ -64,8 +64,9 @@ void startToFs()
     }
 }
 
+
 void read_tof_sensors()
-{
+{   
     TCA9548A(1);
     lox1.rangingTest(&measure1, false);
 
@@ -77,10 +78,10 @@ void read_tof_sensors()
     }
     else
     {   
-        sensor1 = 9999;
+        sensor1 = 8000;
     }
-    if (sensor1 > 9999){
-        sensor1 = 9999;
+    if (sensor1 > 8000){
+        sensor1 = 8000;
     }
 
     TCA9548A(2);
@@ -94,11 +95,11 @@ void read_tof_sensors()
     }
     else
     {
-        sensor2 = 9999;
+        sensor2 = 8000;
     }
 
-        if (sensor2 > 9999){
-        sensor2 = 9999;
+        if (sensor2 > 8000){
+        sensor2 = 8000;
     }
 
     TCA9548A(3);
@@ -112,11 +113,11 @@ void read_tof_sensors()
     }
     else
     {
-        sensor3 = 9999;
+        sensor3 = 8000;
     }
 
-        if (sensor3 > 9999){
-        sensor3 = 9999;
+        if (sensor3 > 8000){
+        sensor3 = 8000;
     }
 
 
@@ -131,11 +132,11 @@ void read_tof_sensors()
     }
     else
     {
-        sensor4 = 9999;
+        sensor4 = 8000;
     }
 
-        if (sensor4 > 9999){
-        sensor4 = 9999;
+        if (sensor4 > 8000){
+        sensor4 = 8000;
     }
 
 
@@ -150,11 +151,11 @@ void read_tof_sensors()
     }
     else
     {
-        sensor5 = 9999;
+        sensor5 = 8000;
     }
 
-        if (sensor5 > 9999){
-        sensor5 = 9999;
+        if (sensor5 > 8000){
+        sensor5 = 8000;
     }
 
 
@@ -169,11 +170,11 @@ void read_tof_sensors()
     }
     else
     {
-        sensor6 = 9999;
+        sensor6 = 8000;
     }
 
-        if (sensor6 > 9999){
-        sensor6 = 9999;
+        if (sensor6 > 8000){
+        sensor6 = 8000;
     }
 }
 
