@@ -43,7 +43,7 @@ int junction_detection_count = 0;
 Servo rot_servo;
 Servo lin_servo; // create servo object to control a servo
 // twelve servo objects can be created on most boards
-int init_rot_pos = 90;
+int init_rot_pos = 80;
 int init_lin_pos = 180;
 int arm_angle;
 int lower_pos = 20;
@@ -241,7 +241,7 @@ void go_cms(int i)
   while (countA < (400 * i))
   {
     set_forward();
-    set_speed(125, 120);
+    set_speed(125, 125);
   }
   brake_fast();
 }
@@ -263,7 +263,7 @@ void reverse_cms(int i)
   while (countA < (400 * i))
   {
     set_back();
-    set_speed(125, 120);
+    set_speed(125, 125);
   }
   brake_fast();
 }
@@ -271,14 +271,14 @@ void reverse_cms(int i)
 void sharpLeft2(int spd)
 {
   countA = 0;
-  while (countA < 5400)
+  while (countA < 4500)
   {
     set_forward();
-    set_speed(125, 120);
+    set_speed(125, 125);
   }
   brake_fast();
   countA = 0;
-  while (countA < 3900)
+  while (countA < 4200)
   {
     set_ccw();
     set_speed(spd, spd);
@@ -290,14 +290,14 @@ void sharpLeft2(int spd)
 void sharpRight2(int spd)
 {
   countA = 0;
-  while (countA < 5400)
+  while (countA <4500)
   {
     set_forward();
-    set_speed(125, 120);
+    set_speed(125, 125);
   }
   brake_fast();
   countA = 0;
-  while (countA < 4000)
+  while (countA < 3900)
   {
     set_cw();
     set_speed(spd, spd);
@@ -310,7 +310,7 @@ void sharpLeft3(int spd)
 {
   Serial.println("left turn3");
   countA = 0;
-  while (countA < 3900)
+  while (countA < 4200)
   {
     set_ccw();
     set_speed(spd, spd);
@@ -322,7 +322,7 @@ void sharpLeft3(int spd)
 void sharpRight3(int spd)
 {
   countA = 0;
-  while (countA < 4000)
+  while (countA < 3900)
   {
     set_cw();
     set_speed(spd, spd);
@@ -388,8 +388,8 @@ void do_pid(int pid)
 void do_pid_reverse(int pid)
 {
   Serial.println("pid workin...");
-  lsp = avg_speed - pid;
-  rsp = avg_speed + pid;
+  lsp = avg_speed + pid;
+  rsp = avg_speed - pid;
   limit_pwm();
   set_back();
   analogWrite(PWMA, lsp);
@@ -454,7 +454,7 @@ void handle_edge_cases()
     while (countA < 5400)
     {
       set_forward();
-      set_speed(125, 120);
+      set_speed(125, 125);
     }
     brake_fast();
 
@@ -546,7 +546,7 @@ void pull_box(int dist)
   delay(500);
   close_arm();
   delay(500);
-  reverse_cms(50);
+  reverse_cms(dist);
   delay(500);
 }
 

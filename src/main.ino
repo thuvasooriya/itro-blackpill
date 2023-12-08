@@ -66,16 +66,16 @@ void setup()
  // startToFs();
   //   if (!lox.begin())
   // {
-  //     Serial.println(F("Failed to boot VL53L0X 1"));
+  //     logtxt(F("Failed to boot VL53L0X 1"));
   //     _blink(5, 300, 100, 1000);
   // }
 }
 
 void loop()
 {
-  // Serial.println("rekkit: ");
-  // Serial.println(rekkit);
-  // Serial.println(digitalRead(USER_BTN));
+  // logtxt("rekkit: ");
+  // logtxt(rekkit);
+  // logtxt(digitalRead(USER_BTN));
   rekkit = (btn_hold(20)) ? true : rekkit;
   if (rekkit)
   {
@@ -83,7 +83,7 @@ void loop()
     {
     case 0:
       ramp();
-        // Serial.println(detect_path_color());
+        // logtxt(detect_path_color());
       // detect_box();
       // level = 2;
       // set_forward();
@@ -111,7 +111,7 @@ void loop()
       //     }
 
       //  }
-      //   Serial.println("line following end1");
+      //   logtxt("line following end1");
       //   brake_fast();
       //   delay(1000);
       //   wall_follow();
@@ -139,13 +139,13 @@ void line_following()
   offset = get_deviation();
   print_ir();
   // Serial.print("offset: ");
-  // Serial.println(offset);
+  // logtxt(offset);
   on_line = (offset == 999) ? false : true;
   if (on_line)
     do_pid(calc_pid(offset));
   else
   {
-    // Serial.println("not on line");
+    // logtxt("not on line");
     prevError = 0;
     integral = 0;
     derivative = 0;
@@ -312,9 +312,9 @@ void pick_box()
 void wall_follow()
 {
   String scanDir;
-  Serial.println("wall check");
+  logtxt("wall check");
   read_tof_sensors();
-  Serial.println("finished reading");
+  logtxt("finished reading");
   tof1 = sensor1;
   tof2 = sensor2;
   tof3 = sensor3;
@@ -332,10 +332,10 @@ void wall_follow()
   Serial.print(tof5);
   // Serial.print(" ");
   // Serial.print(sensor6);
-  Serial.println(" ");
+  logtxt(" ");
   if ((tof1 < 100) or (tof2 < 100) or (tof3 < 100) or (tof4 < 100))
   {
-    Serial.println("Inside first brake ");
+    logtxt("Inside first brake ");
     brake_fast();
     delay(1000);
     read_tof_sensors();
@@ -344,27 +344,27 @@ void wall_follow()
     tof3 = sensor3;
     tof4 = sensor4;
     tof5 = sensor5; // tof1 = sensor1;
-    Serial.println("Second Read Finished");
+    logtxt("Second Read Finished");
     // readTof
     if ((tof1 < tof2) or (tof2 < tof3) or (tof3 < tof4))
     {
-      Serial.println("ifff 1");
+      logtxt("ifff 1");
       // scanLeft(3);
       scanDir = "left";
-      Serial.println("ScaLe");
+      logtxt("ScaLe");
     }
     else if ((tof1 > tof2) or (tof2 > tof3) or (tof3 > tof4))
     {
-      Serial.println("ifff 2");
+      logtxt("ifff 2");
       //  scanRight(3);
       scanDir = "Right";
-      Serial.println("ScaRight");
+      logtxt("ScaRight");
     }
     //
-    Serial.println("Third");
+    logtxt("Third");
     if (scanDir == "left")
     {
-      Serial.println("sec left if");
+      logtxt("sec left if");
       if (tof5 < 80)
       {
         // scanLeft(1);
@@ -596,10 +596,11 @@ void ramp()
     // brake_fast();
     // delay(1000);
     set_forward();
-    set_speed(85, 85);
+    set_speed(85,85);
+
     while (not(allwhite()))
     {
-        line_following();
+        line_following_only();
     }
     brake_fast();
     delay(1000);
@@ -614,41 +615,39 @@ void ramp()
     set_speed(avg_speed, avg_speed);
     while (not(allwhite()))
     {
-
-        line_following();
+        line_following_only();
     }
     brake_fast();
     delay(1000);
+    level =1;
     sharpRight2(125);
-    while (not(allwhite()))
     set_forward();
     set_speed(avg_speed, avg_speed);
+    while (not(allwhite()))
     {
-        line_following();
+        line_following_only();
     }
     brake_fast();
-    delay(5000);
-    pull_box(15);
-    reverse_cms(5);
-    while(not(right_branch()))
+    delay(500);
+    pull_box(13);
+    while (allwhite())
     {
-        reverse_line_following();
+        set_back();
+        set_speed(125,125);
     }
+    brake_fast();
+    delay(500);
+    reverse_cms(60);
     brake_fast;
     delay(500);
     go_cms(10);
     release_box();
-    while(not(right_branch()))
-    {
-         reverse_line_following();
-    }
-    brake_fast();
-    delay(1000);
+    reverse_cms(5);
     move_arm(upper_pos);
     delay(500);
     open_arm(init_rot_pos);
     delay(500);
-    sharpRight2(125);
+    sharpRight3(125);
     set_forward();
     set_speed(avg_speed, avg_speed);
     while (not(allwhite()))
@@ -664,14 +663,24 @@ void ramp()
     brake_fast();
     delay(500);
     sharpLeft3(125);
-    go_cms(5);
+    while (allwhite())
+    {
+        set_forward();
+        set_speed(avg_speed, avg_speed);
+    }
+    brake_fast();
+    delay(500);
+    align_center();
+    delay(500);
     set_forward();
     set_speed(avg_speed, avg_speed);
     while (not(allwhite()))
     {
         line_following();
     }
-        while(allwhite())
+    brake_fast();
+    delay(500);
+    while(allwhite())
     {
     set_forward();
     set_speed(avg_speed, avg_speed);
@@ -679,13 +688,21 @@ void ramp()
     brake_fast();
     delay(500);
     sharpRight3(125);
-    set_forward();
-    set_speed(avg_speed, avg_speed);
-    while (not(verify_checkpoint()))
+    while (allwhite())
     {
-        line_following();
+        set_forward();
+        set_speed(avg_speed, avg_speed);
     }
     brake_fast();
-    delay(1000);
-
+    delay(500);
+    align_center();
+    delay(500);
+    // set_forward();
+    // set_speed(avg_speed, avg_speed);
+    // while (not(verify_checkpoint()))
+    // {
+    //     line_following_only();
+    // }
+    // brake_fast();
+    // delay(1000);
 }

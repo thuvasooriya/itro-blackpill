@@ -62,7 +62,7 @@ void setup_display()
   tft.setRotation(1);
 
   tft.fillScreen(BLACK);
-  tft.setTextColor(ST7735_YELLOW, BLACK);
+  tft.setTextColor(TFT_YELLOW, BLACK);
   delay(2000);
   initgame();
 }

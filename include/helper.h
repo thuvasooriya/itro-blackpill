@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <pins.h>
+#include <display.h>
 
 // logic when not using USB
 #define HWUART // comment this if you want to connect to USBSerial
@@ -79,6 +80,26 @@ bool btn_hold(int t)
     return true;
   }
 }
+
+void logg(const char txt[], int x)
+{
+  Serial.print(txt);
+  Serial.println(x);
+  tft.startWrite();
+  tft.print(txt);
+  tft.println(x);
+  tft.endWrite();
+}
+void logtxt(const char txt[])
+{
+  // if (not dev_mode)
+  //   return;
+  Serial.println(txt);
+  tft.startWrite();
+  tft.println(txt);
+  tft.endWrite();
+}
+
 
 bool allblack()
 {
