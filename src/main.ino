@@ -1,8 +1,8 @@
 #include <motor.h>
 #include <color_sensor.h>
-#include <tof_2.h>
 #include <sound.h>
 #include <math.h>
+#include <guard_robot.h>
 
 void line_following();
 void line_following_only();

@@ -180,6 +180,81 @@ void read_tof_sensors()
     }
 }
 
+void read_tof_sensors_guard()
+{   
+    TCA9548A(0);
+    lox1.rangingTest(&measure1, false);
+
+    if (measure1.RangeStatus != 4)
+    { // phase failures have incorrect data
+      //  Serial.print("Distance (mm): ");
+        sensor1 =  measure1.RangeMilliMeter;
+      //  Serial.println(measure1.RangeMilliMeter);
+    }
+    else
+    {   
+        sensor1 = 8000;
+    }
+    if (sensor1 > 8000){
+        sensor1 = 8000;
+    }
+
+    TCA9548A(1);
+    lox2.rangingTest(&measure2, false);
+
+    if (measure2.RangeStatus != 4)
+    { // phase failures have incorrect data
+      //   Serial.print("Distance (mm): ");
+        sensor2 =  measure2.RangeMilliMeter;
+      //  Serial.println(measure2.RangeMilliMeter);
+    }
+    else
+    {
+        sensor2 = 8000;
+    }
+
+        if (sensor2 > 8000){
+        sensor2 = 8000;
+    }
+
+    TCA9548A(2);
+    lox3.rangingTest(&measure3, false);
+
+    if (measure3.RangeStatus != 4)
+    { // phase failures have incorrect data
+     //   Serial.print("Distance (mm): ");
+        sensor3 = measure3.RangeMilliMeter;
+      //  Serial.println(measure3.RangeMilliMeter);
+    }
+    else
+    {
+        sensor3 = 8000;
+    }
+
+        if (sensor3 > 8000){
+        sensor3 = 8000;
+    }
+
+
+    TCA9548A(3);
+    lox4.rangingTest(&measure4, false);
+
+    if (measure4.RangeStatus != 4)
+    { // phase failures have incorrect data
+      //  Serial.print("Distance (mm): ");
+        sensor4 = measure4.RangeMilliMeter;
+      //  Serial.println(measure4.RangeMilliMeter);
+    }
+    else
+    {
+        sensor4 = 8000;
+    }
+
+        if (sensor4 > 8000){
+        sensor4 = 8000;
+    }
+}
+
 void print_tof()
 {
     read_tof_sensors();
