@@ -82,7 +82,7 @@ void loop()
     switch (level)
     {
     case 0:
-      ramp();
+     ramp();
         // logtxt(detect_path_color());
       // detect_box();
       // level = 2;
@@ -620,7 +620,7 @@ void ramp()
     brake_fast();
     delay(1000);
     level =1;
-    sharpRight2(125);
+    sharpRight2(100);
     set_forward();
     set_speed(avg_speed, avg_speed);
     while (not(allwhite()))
@@ -637,7 +637,13 @@ void ramp()
     }
     brake_fast();
     delay(500);
-    reverse_cms(60);
+    int cou = 0;
+    while (cou < 5){
+      reverse_cms(10);
+      align_center_reverse();
+      delay(500);
+      cou++;
+    }
     brake_fast;
     delay(500);
     go_cms(10);
@@ -647,7 +653,7 @@ void ramp()
     delay(500);
     open_arm(init_rot_pos);
     delay(500);
-    sharpRight3(125);
+    sharpRight3(100);
     set_forward();
     set_speed(avg_speed, avg_speed);
     while (not(allwhite()))
@@ -662,12 +668,13 @@ void ramp()
     }
     brake_fast();
     delay(500);
-    sharpLeft3(125);
+    sharpLeft3(100);
     while (allwhite())
     {
         set_forward();
         set_speed(avg_speed, avg_speed);
     }
+    checkpoint_align();
     brake_fast();
     delay(500);
     align_center();
@@ -687,7 +694,8 @@ void ramp()
     }
     brake_fast();
     delay(500);
-    sharpRight3(125);
+    sharpRight3(100);
+    checkpoint_align();
     while (allwhite())
     {
         set_forward();
@@ -697,6 +705,8 @@ void ramp()
     delay(500);
     align_center();
     delay(500);
+    open_arm(5);
+    move_arm(lower_pos);
     // set_forward();
     // set_speed(avg_speed, avg_speed);
     // while (not(verify_checkpoint()))
@@ -705,4 +715,6 @@ void ramp()
     // }
     // brake_fast();
     // delay(1000);
+    // move_arm(upper_pos);
+    // open_arm(init_rot_pos);
 }

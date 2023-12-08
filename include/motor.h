@@ -43,7 +43,7 @@ int junction_detection_count = 0;
 Servo rot_servo;
 Servo lin_servo; // create servo object to control a servo
 // twelve servo objects can be created on most boards
-int init_rot_pos = 80;
+int init_rot_pos = 70;
 int init_lin_pos = 180;
 int arm_angle;
 int lower_pos = 20;
@@ -172,6 +172,33 @@ void align_center()
   brake_fast();
 }
 
+void align_center_reverse()
+{
+  while (digitalRead(IR3) != 1)
+  {
+    if (get_deviation() > 0)
+    {
+      countA = 0;
+      while (countA < 100)
+      {
+        set_cw();
+        set_speed(100, 100);
+      }
+    }
+    else if (get_deviation() < 0)
+    {
+      countA = 0;
+      while (countA < 100)
+      {
+        set_ccw();
+        set_speed(100, 100);
+      }
+    }
+  }
+ brake_fast();
+}
+
+
 void scanLeft(int times, int count)
 {
   int ct = 0;
@@ -224,6 +251,26 @@ void scan(int scanTimes)
   align_center();
 }
 
+void checkpoint_align()
+{
+    int c =0;
+    while (allblack()){
+      scanRight(1, 200);
+      c++;
+      if (c> 3){
+        break;
+      }
+    }
+    c = 0;
+        while (allblack()){
+      scanLeft(1, 200);
+      c++;
+      if (c> 3){
+        break;
+      }
+    }
+}
+
 // void go_5cms(int i)
 // {
 //   countA = 0;
@@ -271,14 +318,14 @@ void reverse_cms(int i)
 void sharpLeft2(int spd)
 {
   countA = 0;
-  while (countA < 4500)
+  while (countA < 4000)
   {
     set_forward();
     set_speed(125, 125);
   }
   brake_fast();
   countA = 0;
-  while (countA < 4200)
+  while (countA < 2900)
   {
     set_ccw();
     set_speed(spd, spd);
@@ -290,14 +337,14 @@ void sharpLeft2(int spd)
 void sharpRight2(int spd)
 {
   countA = 0;
-  while (countA <4500)
+  while (countA <4200)
   {
     set_forward();
     set_speed(125, 125);
   }
   brake_fast();
   countA = 0;
-  while (countA < 3900)
+  while (countA < 2900)
   {
     set_cw();
     set_speed(spd, spd);
@@ -310,7 +357,7 @@ void sharpLeft3(int spd)
 {
   Serial.println("left turn3");
   countA = 0;
-  while (countA < 4200)
+  while (countA < 2900)
   {
     set_ccw();
     set_speed(spd, spd);
@@ -322,7 +369,7 @@ void sharpLeft3(int spd)
 void sharpRight3(int spd)
 {
   countA = 0;
-  while (countA < 3900)
+  while (countA < 2900)
   {
     set_cw();
     set_speed(spd, spd);
