@@ -24,3 +24,7 @@
 
 // Microphone
 #define SND PA1
+
+// Servo Motors
+#define SER_L PA2
+#define SER_R PA1

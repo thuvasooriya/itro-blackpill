@@ -2,6 +2,7 @@
 #include "Adafruit_VL53L0X.h"
 
 int sensor1, sensor2, sensor3, sensor4, sensor5, sensor6;
+int tof1, tof2, tof3, tof4, tof5, tof6;
 
 // objects for the vl53l0x
 Adafruit_VL53L0X lox1 = Adafruit_VL53L0X();
@@ -21,42 +22,42 @@ VL53L0X_RangingMeasurementData_t measure6;
 
 void startToFs()
 {
-    TCA9548A(1);
+    TCA9548A(0);
     if (!lox1.begin())
     {
         Serial.println(F("Failed to boot VL53L0X 1"));
         _blink(5, 300, 100, 1000);
     }
 
-    TCA9548A(2);
+    TCA9548A(1);
     if (!lox2.begin())
     {
         Serial.println(F("Failed to boot VL53L0X 2"));
         _blink(5, 300, 100, 1000);
     }
 
-    TCA9548A(3);
+    TCA9548A(2);
     if (!lox3.begin())
     {
         Serial.println(F("Failed to boot VL53L0X 3"));
         _blink(5, 300, 100, 1000);
     }
 
-    TCA9548A(4);
+    TCA9548A(3);
     if (!lox4.begin())
     {
         Serial.println(F("Failed to boot VL53L0X 4"));
         _blink(5, 300, 100, 1000);
     }
 
-    TCA9548A(5);
+    TCA9548A(4);
     if (!lox5.begin())
     {
         Serial.println(F("Failed to boot VL53L0X 5"));
         _blink(5, 300, 100, 1000); 
     }
 
-    TCA9548A(6);
+    TCA9548A(5);
     if (!lox6.begin())
     {
         Serial.println(F("Failed to boot VL53L0X 6"));
@@ -68,7 +69,7 @@ void startToFs()
 void read_tof_sensors()
 {   
     startToFs();
-    TCA9548A(1);
+    TCA9548A(0);
     lox1.rangingTest(&measure1, false);
 
     if (measure1.RangeStatus != 4)
@@ -85,7 +86,7 @@ void read_tof_sensors()
         sensor1 = 8000;
     }
 
-    TCA9548A(2);
+    TCA9548A(1);
     lox2.rangingTest(&measure2, false);
 
     if (measure2.RangeStatus != 4)
@@ -103,7 +104,7 @@ void read_tof_sensors()
         sensor2 = 8000;
     }
 
-    TCA9548A(3);
+    TCA9548A(2);
     lox3.rangingTest(&measure3, false);
 
     if (measure3.RangeStatus != 4)
@@ -122,7 +123,7 @@ void read_tof_sensors()
     }
 
 
-    TCA9548A(4);
+    TCA9548A(3);
     lox4.rangingTest(&measure4, false);
 
     if (measure4.RangeStatus != 4)
@@ -141,7 +142,7 @@ void read_tof_sensors()
     }
 
 
-    TCA9548A(5);
+    TCA9548A(4);
     lox5.rangingTest(&measure5, false);
 
     if (measure5.RangeStatus != 4)
@@ -160,7 +161,7 @@ void read_tof_sensors()
     }
 
 
-    TCA9548A(6);
+    TCA9548A(5);
     lox6.rangingTest(&measure6, false);
 
     if (measure6.RangeStatus != 4)
@@ -179,19 +180,33 @@ void read_tof_sensors()
     }
 }
 
-    // read_tof_sensors();
-    // Serial.print(sensor1);
-    // Serial.print(" ");
-    // Serial.print(sensor2);    
-    // Serial.print(" ");
-    // Serial.print(sensor3);
-    // Serial.print(" ");
-    // Serial.print(sensor4);
-    // Serial.print(" ");
-    // Serial.print(sensor5);
-    // Serial.print(" ");
-    // Serial.print(sensor6);
-    // Serial.println(" ");
+void print_tof()
+{
+    read_tof_sensors();
+    Serial.print(sensor1);
+    Serial.print(" ");
+    Serial.print(sensor2);    
+    Serial.print(" ");
+    Serial.print(sensor3);
+    Serial.print(" ");
+    Serial.print(sensor4);
+    Serial.print(" ");
+    Serial.print(sensor5);
+    Serial.print(" ");
+    Serial.print(sensor6);
+    Serial.println(" ");
     // delay(200);
+}
+
+void return_tof_val()
+{
+    read_tof_sensors();
+    tof1 = sensor1;
+    tof2 = sensor2;
+    tof3 = sensor3;
+    tof4 = sensor4;
+    tof5 = sensor5;
+    tof6 = sensor6;
+}
 
 

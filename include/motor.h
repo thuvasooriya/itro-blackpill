@@ -1,4 +1,5 @@
 #include <helper.h>
+#include <Servo.h>
 
 int offset = 0;
 // ### speed and delays ###
@@ -34,6 +35,16 @@ float pid_val;
 bool on_line;
 
 int junction_detection_count = 0;
+
+//Servo
+Servo rot_servo;
+Servo lin_servo;  // create servo object to control a servo
+// twelve servo objects can be created on most boards
+int init_rot_pos = 5;
+int init_lin_pos = 65;
+int arm_angle;
+int lower_pos = 150;
+int upper_pos = 10;
 
 void encIncrementA()
 {
@@ -455,4 +466,83 @@ void handle_edge_cases()
       sharpLeft2(avg_speed);
     }
   }
+}
+
+// Servo Motor Functions
+
+void open_arm(int ang)
+{
+  rot_servo.write(ang);
+}
+
+void close_arm()
+{
+  rot_servo.write(init_rot_pos);
+}
+
+void move_arm(int angle)
+{
+  lin_servo.write(angle);
+}
+
+void lift_box(int dist)
+{
+  move_arm(lower_pos);
+  open_arm(50);
+  delay(500);
+  go_cms(dist);
+  delay(500);
+  open_arm(15);
+  delay(500);
+  close_arm();
+  delay(500);
+  move_arm(upper_pos);
+  delay(500);
+  reverse_cms(dist);
+    delay(500);
+}
+
+void drop_box(int dist)
+{
+  go_cms(dist);
+  move_arm(lower_pos);
+  delay(500);
+  open_arm(20);
+  delay(500);
+  open_arm(50);
+  reverse_cms(dist);
+  close_arm();
+  delay(200);
+  move_arm(upper_pos);
+  delay(500);
+}
+
+void pull_box(int dist)
+{
+  move_arm(lower_pos);
+  delay(500);
+  open_arm(50);
+  delay(500);
+  go_cms(dist);
+  delay(500);
+  open_arm(15);
+  delay(500);
+  close_arm();
+  delay(500);
+  reverse_cms(50);
+    delay(500);
+}
+
+void release_box(int dist)
+{
+  go_cms(dist);
+  open_arm(20);
+  delay(500);
+  open_arm(50);
+  delay(500);
+  reverse_cms(dist);
+  close_arm();
+  delay(500);
+  move_arm(upper_pos);
+  delay(500);
 }
