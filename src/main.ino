@@ -2,6 +2,7 @@
 #include <color_sensor.h>
 #include <tof_2.h>
 #include <sound.h>
+#include <math.h>
 
 void line_following();
 void line_following_only();
@@ -68,7 +69,9 @@ void loop()
     switch (level)
     {
     case 0:
-      print_tof();
+      detect_box();
+      level = 2;
+      //print_tof();
       // line_following_only();
       // time = millis();
       // if (time - ex_millis >= 100)
@@ -195,7 +198,7 @@ void pick_box()
   int ctt = 0;
   while ((path_color != "red") and (path_color != "blue") and (ctt < 5))
   {
-    scanLeft(1);
+    scanLeft(1, 100);
     path_color = detect_color();
     ctt++;
   }
@@ -203,7 +206,7 @@ void pick_box()
   ctt = 0;
   while ((path_color != "red") and (path_color != "blue") and (ctt < 5))
   {
-    scanRight(1);
+    scanRight(1, 300);
     path_color = detect_color();
     ctt++;
   }
@@ -225,7 +228,7 @@ void pick_box()
   int cctt = 0;
   while (cctt < 5)
   {
-    scanLeft(1);
+    scanLeft(1, 100);
     if (cctt == 3)
     {
       break;
@@ -350,4 +353,55 @@ void navigate_sound()
     } 
 }
 
+int proximity;
+bool is_box_detected = false;
 
+bool detect_box()
+{   int scanTimes = 0;
+    while (not(is_box_detected))
+    {   
+      read_tof_sensors();
+      while ((sensor2 > 300) or (sensor3 > 300))
+      {
+          scanLeft(1, 300);
+          read_tof_sensors();
+          scanTimes++;
+          if (scanTimes > 1){
+               break;
+          }
+      }
+      scanTimes = 0;
+          while ((sensor2 > 300) or (sensor3 > 300))
+      {
+          scanRight(1, 300);
+          read_tof_sensors();
+          scanTimes++;
+          if (scanTimes > 3){
+               break;
+          }
+      }
+      scanTimes = 0;
+          while ((sensor2 > 300) or (sensor3 >300))
+      {
+          scanLeft(1, 300);
+          read_tof_sensors();
+          scanTimes++;
+          if (scanTimes > 1){
+               break;
+          }
+    
+      }
+            read_tof_sensors();
+          int box_distance = min(sensor1, sensor2);
+          if (box_distance>300)
+          {
+               detect_box();
+          }
+          box_distance = floor(box_distance / 10);
+          lift_box(box_distance + 5);
+          is_box_detected = true;
+          align_center();
+      
+    }
+    return is_box_detected;
+}

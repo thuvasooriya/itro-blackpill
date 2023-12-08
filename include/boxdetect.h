@@ -1,34 +1,47 @@
-int tof1, tof2, tof3, tof4;
-int proximity;
-bool is_box_detected = false;
+// int proximity;
+// bool is_box_detected = false;
 
-bool detect_box()
-{  
-    while (not(is_box_detected))
-    {   
-        if (tof1 > proximity and  tof2 < proximity and tof3 < proximity and tof4 > proximity)
-        {
-                is_box_detected = true;
-        }
-        else if(tof1 < proximity and  tof2 > proximity and tof3 > proximity and tof4 > proximity)
-        {
-             //   scanLeft(2);
-        }
-        else if(tof1 < proximity and  tof2 < proximity and tof3 > proximity and tof4 > proximity)
-        {
-             //   scanLeft(1);
-        }
-        else if(tof1 > proximity and  tof2 > proximity and tof3 > proximity and tof4 < proximity)
-        {
-             //   scanRight(2);
-        }
-        else if(tof1 > proximity and  tof2 > proximity and tof3 < proximity and tof4 < proximity)
-        {
-             //   scanRight(1);
-        }
-        else{
-            break;
-        }
-    }
-    return is_box_detected;
-}
+// bool detect_box()
+// {   int scanTimes = 1;
+//     while (not(is_box_detected))
+//     {   
+//       read_tof_sensors();
+//       while ((sensor2 > 400) and (sensor3 > 400))
+//       {
+//           scanLeft(1);
+//           read_tof_sensors();
+//           scanTimes++;
+//           if (scanTimes > 4){
+//                break;
+//           }
+//       }
+//           while ((sensor2 > 400) or (sensor3 > 400))
+//       {
+//           scanRight(1);
+//           read_tof_sensors();
+//           scanTimes++;
+//           if (scanTimes > 8){
+//                break;
+//           }
+//       }
+//           while ((sensor2 > 400) or (sensor3 > 400))
+//       {
+//           scanLeft(1);
+//           read_tof_sensors();
+//           scanTimes++;
+//           if (scanTimes > 4){
+//                break;
+//           }
+//           read_tof_sensors();
+//           int box_distance = min(sensor1, sensor2);
+//           if (box_distance>400)
+//           {
+//                detect_box();
+//           }
+//           box_distance = box_distance / 10;
+//           lift_box(box_distance + 5);
+//       }
+      
+//     }
+//     return is_box_detected;
+// }

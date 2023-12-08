@@ -167,7 +167,7 @@ void align_center()
   brake_fast();
 }
 
-void scanLeft(int times)
+void scanLeft(int times, int count)
 {
   int ct = 0;
   brake_fast();
@@ -175,7 +175,7 @@ void scanLeft(int times)
   while (ct < times)
   {
     countA = 0;
-    while (countA < 100)
+    while (countA < count) //100
     {
       set_ccw();
       set_speed(75, 75);
@@ -186,7 +186,7 @@ void scanLeft(int times)
   delay(1000);
 }
 
-void scanRight(int times)
+void scanRight(int times, int count)
 {
   int ct = 0;
   brake_fast();
@@ -194,7 +194,7 @@ void scanRight(int times)
   while (ct < times)
   {
     countA = 0;
-    while (countA < 100)
+    while (countA < count) //100
     {
       set_cw();
       set_speed(75, 75);
@@ -207,14 +207,14 @@ void scanRight(int times)
 
 void scan(int scanTimes)
 {
-  scanLeft(scanTimes);
+  scanLeft(scanTimes, 100);
   delay(1000);
-  scanRight(scanTimes);
+  scanRight(scanTimes, 100);
   delay(1000);
   align_center();
-  scanRight(scanTimes);
+  scanRight(scanTimes, 100);
   delay(1000);
-  scanLeft(scanTimes);
+  scanLeft(scanTimes, 100);
   delay(1000);
   align_center();
 }
@@ -487,9 +487,9 @@ void move_arm(int angle)
 
 void lift_box(int dist)
 {
-  move_arm(lower_pos);
-  open_arm(50);
+   open_arm(50);
   delay(500);
+  move_arm(lower_pos);
   go_cms(dist);
   delay(500);
   open_arm(15);
@@ -511,17 +511,17 @@ void drop_box(int dist)
   delay(500);
   open_arm(50);
   reverse_cms(dist);
-  close_arm();
-  delay(200);
   move_arm(upper_pos);
   delay(500);
+  close_arm();
+  delay(200);
 }
 
 void pull_box(int dist)
 {
-  move_arm(lower_pos);
-  delay(500);
   open_arm(50);
+  delay(500);
+  move_arm(lower_pos);
   delay(500);
   go_cms(dist);
   delay(500);
@@ -541,8 +541,8 @@ void release_box(int dist)
   open_arm(50);
   delay(500);
   reverse_cms(dist);
-  close_arm();
-  delay(500);
   move_arm(upper_pos);
+  delay(500);
+  close_arm();
   delay(500);
 }
