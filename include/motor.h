@@ -43,12 +43,11 @@ int junction_detection_count = 0;
 Servo rot_servo;
 Servo lin_servo; // create servo object to control a servo
 // twelve servo objects can be created on most boards
-int init_rot_pos = 5;
+int init_rot_pos = 90;
 int init_lin_pos = 180;
 int arm_angle;
 int lower_pos = 20;
 int upper_pos = 180;
-int open_rot_pos = 90;
 
 String box_color = "";
 
@@ -494,7 +493,7 @@ void open_arm(int ang)
 
 void close_arm()
 {
-  rot_servo.write(init_rot_pos);
+  rot_servo.write(5);
 }
 
 void move_arm(int angle)
@@ -531,7 +530,7 @@ void drop_box(int dist)
   reverse_cms(dist);
   move_arm(upper_pos);
   delay(500);
-  close_arm();
+  open_arm(init_rot_pos);
   delay(200);
 }
 
@@ -551,7 +550,7 @@ void pull_box(int dist)
   delay(500);
 }
 
-void release_box(int dist)
+void release_box()
 {
   open_arm(20);
   delay(500);

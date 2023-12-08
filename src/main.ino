@@ -12,6 +12,7 @@ void avoid_guard_robot();
 void detect_box();
 void navigate_sound();
 void reverse_line_following();
+void ramp();
 
 
 String path_color = "";
@@ -62,7 +63,7 @@ void setup()
   Serial.begin(9600);
   brake_fast();
   Wire.begin();
-  // startToFs();
+ // startToFs();
   //   if (!lox.begin())
   // {
   //     Serial.println(F("Failed to boot VL53L0X 1"));
@@ -81,8 +82,8 @@ void loop()
     switch (level)
     {
     case 0:
-      Serial.println(is_obstacle_ahead());
-
+      ramp();
+        // Serial.println(detect_path_color());
       // detect_box();
       // level = 2;
       // set_forward();
@@ -586,4 +587,105 @@ void avoid_guard_robot()
         brake_fast();
         //The End.....
     }
+}
+
+void ramp()
+{
+    // sharpRight3(125);
+    // go_cms(5);
+    // brake_fast();
+    // delay(1000);
+    set_forward();
+    set_speed(85, 85);
+    while (not(allwhite()))
+    {
+        line_following();
+    }
+    brake_fast();
+    delay(1000);
+    while (allwhite())
+    {
+        set_forward();
+        set_speed(avg_speed, avg_speed);
+    }
+    brake_fast();
+    delay(1000);
+    set_forward();
+    set_speed(avg_speed, avg_speed);
+    while (not(allwhite()))
+    {
+
+        line_following();
+    }
+    brake_fast();
+    delay(1000);
+    sharpRight2(125);
+    while (not(allwhite()))
+    set_forward();
+    set_speed(avg_speed, avg_speed);
+    {
+        line_following();
+    }
+    brake_fast();
+    delay(5000);
+    pull_box(15);
+    reverse_cms(5);
+    while(not(right_branch()))
+    {
+        reverse_line_following();
+    }
+    brake_fast;
+    delay(500);
+    go_cms(10);
+    release_box();
+    while(not(right_branch()))
+    {
+         reverse_line_following();
+    }
+    brake_fast();
+    delay(1000);
+    move_arm(upper_pos);
+    delay(500);
+    open_arm(init_rot_pos);
+    delay(500);
+    sharpRight2(125);
+    set_forward();
+    set_speed(avg_speed, avg_speed);
+    while (not(allwhite()))
+    {
+        line_following();
+    }
+    brake_fast();
+    while(allwhite())
+    {
+    set_forward();
+    set_speed(avg_speed, avg_speed);
+    }
+    brake_fast();
+    delay(500);
+    sharpLeft3(125);
+    go_cms(5);
+    set_forward();
+    set_speed(avg_speed, avg_speed);
+    while (not(allwhite()))
+    {
+        line_following();
+    }
+        while(allwhite())
+    {
+    set_forward();
+    set_speed(avg_speed, avg_speed);
+    }
+    brake_fast();
+    delay(500);
+    sharpRight3(125);
+    set_forward();
+    set_speed(avg_speed, avg_speed);
+    while (not(verify_checkpoint()))
+    {
+        line_following();
+    }
+    brake_fast();
+    delay(1000);
+
 }

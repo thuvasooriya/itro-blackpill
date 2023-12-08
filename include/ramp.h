@@ -55,7 +55,7 @@
 //     delay(1000);
 //     move_arm(upper_pos);
 //     delay(500);
-//     close_arm();
+//     open_arm(init_rot_pos);
 //     delay(500);
 //     sharpRight2();
 //     set_forward();
