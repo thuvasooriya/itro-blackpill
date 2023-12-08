@@ -112,4 +112,22 @@ void setup_pins() {
   pinMode(encoderInB, INPUT);
 
   pinMode(TFT_CS, OUTPUT);
+
+
+  // pinMode(triggerPin, OUTPUT);
+  // pinMode(echoPin, INPUT);
+
+  // pinMode(encoderInA, INPUT);
+  // attachInterrupt(digitalPinToInterrupt(encoderInA), encIncrementA, RISING);
+  // pinMode(encoderInB, INPUT);
+  // attachInterrupt(digitalPinToInterrupt(encoderInB), encIncrementB, RISING);
+
+  // rot_servo.attach(SER_R); // attaches the servo on GIO2 to the servo object
+  // rot_servo.write(init_rot_pos);
+  // lin_servo.attach(SER_L);
+  // lin_servo.write(upper_pos);
+
+  // Serial.begin(9600);
+  // brake_fast();
+  Wire.begin();
 }

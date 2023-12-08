@@ -16,7 +16,7 @@ int avg_speed = 125;
 int lsp, rsp;
 // counter measures
 int cm_speed = 100;
-int cm_delay = 100;
+int cm_delay = 20;
 int cm_counter = 0;
 int cm_max = 200;
 int chk_point_t = 4;
@@ -354,8 +354,8 @@ void calibrate_encoder()
       cali_status = true;
     }
   }
-  log("fa_10cm", fa_10cm);
-  log("fb_10cm", fb_10cm);
+  dev_log("fa_10cm", fa_10cm);
+  dev_log("fb_10cm", fb_10cm);
 }
 
 // void checkpoint_crossing()
@@ -563,7 +563,7 @@ void line_following_revised()
   {
     bool skip_state = false;
     line_state = get_line_state();
-    log("line_state: ", line_state);
+    dev_log("line_state: ", line_state);
 
     // ##### black #####
     // #################
@@ -643,7 +643,7 @@ void line_following_revised()
     // #################
     else if (line_state == 6)
     {
-      delay(cm_delay);
+      
       if (prev_line_state == 5) // white thing detected
       {
         logtxt("start white");
@@ -716,13 +716,14 @@ void line_following_revised()
       //   // log("cm_counter: ", cm_counter);
       //   // level = (cm_counter > cm_max) ? 1 : 0;
       // }
+      delay(cm_delay);
     }
 
     // ##### left #####
     // ################
     else if (line_state == 7)
     {
-      delay(cm_delay);
+      
       if (prev_line_state == 5) // found a left line
       {
         set_forward();
@@ -792,13 +793,14 @@ void line_following_revised()
         // log("cm_counter: ", cm_counter);
         // level = (cm_counter > cm_max) ? 1 : 0;
       }
+      delay(cm_delay);
     }
 
     // ##### right #####
     // #################
     else if (line_state == 8)
     {
-      delay(cm_delay);
+      
       if (prev_line_state == 5) // found a right line
       {
       
@@ -867,6 +869,7 @@ void line_following_revised()
         // log("cm_counter: ", cm_counter);
         // level = (cm_counter > cm_max) ? 1 : 0;
       }
+      delay(cm_delay);
     }
     // ##### pwm #####
     // ###############

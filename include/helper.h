@@ -61,7 +61,7 @@ void reset_display()
   tft.fillScreen(BLACK);
 }
 
-void log(const char txt[], int x)
+void dev_log(const char txt[], int x)
 {
   Serial.print(txt);
   Serial.println(x);
@@ -126,12 +126,12 @@ int btn_hold_length()
     while (digitalRead(USER_BTN) == 0)
     {
       i++;
-      log("btn_t: ", i);
+      dev_log("btn_t: ", i);
       delay(100);
       // blink(20);
     }
     // blink(3, 100, 100, 1000);
-    log("held len: ",i );
+    dev_log("held len: ",i );
     return i;
   }
 }
@@ -144,7 +144,7 @@ void level_switcher()
   delay(500);
   int val = btn_hold_length();
   // log("val: ",val);
-  if (val < 10 and val > 0)
+  if (val < 5 and val > 0)
   {
     if (level < max_level)
     {
@@ -155,18 +155,18 @@ void level_switcher()
       level = 0;
     }
   }
-  else if (val > 10)
+  else if (val > 5)
   {
     logtxt("starting in ... 3");
     logtxt("reset to start over");
-    delay(1000);
+    delay(500);
     logtxt("starting in ... 2");
-    delay(1000);
+    delay(500);
     logtxt("starting in ... 1");
-    delay(1000);
+    delay(500);
     rekkit = true;
   }
-  log("lvl: ", level);
+  dev_log("lvl: ", level);
 }
 
 bool allblack()
