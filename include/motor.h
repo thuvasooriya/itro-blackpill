@@ -44,10 +44,11 @@ Servo rot_servo;
 Servo lin_servo; // create servo object to control a servo
 // twelve servo objects can be created on most boards
 int init_rot_pos = 5;
-int init_lin_pos = 65;
+int init_lin_pos = 180;
 int arm_angle;
-int lower_pos = 150;
-int upper_pos = 10;
+int lower_pos = 20;
+int upper_pos = 180;
+int open_rot_pos = 90;
 
 String box_color = "";
 

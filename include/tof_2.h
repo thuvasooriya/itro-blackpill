@@ -25,42 +25,42 @@ void startToFs()
     if (!lox1.begin())
     {
         Serial.println(F("Failed to boot VL53L0X 1"));
-        _blink(5, 300, 100, 1000);
+       // _blink(5, 300, 100, 1000);
     }
 
     TCA9548A(1);
     if (!lox2.begin())
     {
         Serial.println(F("Failed to boot VL53L0X 2"));
-        _blink(5, 300, 100, 1000);
+    // _blink(5, 300, 100, 1000);
     }
 
     TCA9548A(2);
     if (!lox3.begin())
     {
         Serial.println(F("Failed to boot VL53L0X 3"));
-        _blink(5, 300, 100, 1000);
+      //  _blink(5, 300, 100, 1000);
     }
 
     TCA9548A(3);
     if (!lox4.begin())
     {
         Serial.println(F("Failed to boot VL53L0X 4"));
-        _blink(5, 300, 100, 1000);
+      //  _blink(5, 300, 100, 1000);
     }
 
     TCA9548A(4);
     if (!lox5.begin())
     {
         Serial.println(F("Failed to boot VL53L0X 5"));
-        _blink(5, 300, 100, 1000);
+      //  _blink(5, 300, 100, 1000);
     }
 
     TCA9548A(5);
     if (!lox6.begin())
     {
         Serial.println(F("Failed to boot VL53L0X 6"));
-        _blink(5, 300, 100, 1000);
+     //   _blink(5, 300, 100, 1000);
     }
 }
 

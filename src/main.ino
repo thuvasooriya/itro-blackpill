@@ -299,6 +299,13 @@ void pick_box()
   drop_box(8);
   delay(1000);
   sharpLeft2(avg_speed);
+  while(allwhite())
+  {
+    set_forward();
+    set_speed(125,125);
+  }
+  brake_fast;
+  delay(1000);
 }
 
 void wall_follow()
@@ -404,10 +411,42 @@ void wall_follow()
 
 void navigate_sound()
 {
-  while (soundLevel() < 200)
+  ex_millis = millis();
+  while(not(right_branch()))
   {
-    line_following();
+    time = millis();
+    if ((time - ex_millis) > 100){
+      if (soundLevel() > 200){
+        brake_fast();
+        delay(100);
+      }
+    }
+    line_following_only();
+    ex_millis = time;
   }
+  sharpRight2(125);
+  ex_millis = millis();
+  while(not(verify_checkpoint()))
+  {
+    time = millis();
+    if ((time - ex_millis) > 100){
+      if (soundLevel() > 200){
+        brake_fast();
+        delay(100);
+      }
+    }
+    line_following_only();
+    ex_millis = time;
+  }
+  brake_fast();
+  delay(1000);
+  while(allwhite())
+  {
+    set_forward();
+    set_speed(125,125);
+  }
+  brake_fast();
+  delay(200);
 }
 
 
