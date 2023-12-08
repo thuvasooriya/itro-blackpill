@@ -13,6 +13,7 @@ void detect_box();
 void navigate_sound();
 void reverse_line_following();
 void ramp();
+void nav_sound();
 
 
 String path_color = "";
@@ -23,6 +24,7 @@ unsigned long ex_millis_1 = 0;
 unsigned long time1;
 int box_detect_count = 0;
 bool is_box_detected = false;
+
 
 // Adafruit_VL53L0X lox = Adafruit_VL53L0X();
 
@@ -82,7 +84,7 @@ void loop()
     switch (level)
     {
     case 0:
-     ramp();
+     nav_sound();
         // logtxt(detect_path_color());
       // detect_box();
       // level = 2;
@@ -717,4 +719,28 @@ void ramp()
     // delay(1000);
     // move_arm(upper_pos);
     // open_arm(init_rot_pos);
+}
+
+void nav_sound(){
+  while (soundLevel() <sound_proximity){
+    if (right_branch()){
+      sharpRight2(100);
+    }else if(left_branch())
+    {
+      sharpLeft2(100);
+    }else if(allwhite())
+    {
+      brake_fast();
+      while(allwhite())
+      {
+        set_forward();
+        set_speed(125,125);
+      }
+      brake_fast();
+      level = 3;
+      break;
+    }
+    line_following_only();
+  } 
+  brake_fast();
 }

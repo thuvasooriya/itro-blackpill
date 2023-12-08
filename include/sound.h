@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <pins.h>
 
+int sound_proximity = 300;
 const int sampleWindow = 50; // 50mS Sample window width (20Hz)
 unsigned int sample;
 

@@ -23,7 +23,7 @@
 #define IR5 PA8
 
 // Microphone
-#define SND PA1
+#define SND PA3
 
 // Servo Motors
 #define SER_L PA2
