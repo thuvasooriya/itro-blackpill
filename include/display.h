@@ -1,10 +1,10 @@
 #define BLACK 0x0000
 #define WHITE 0xFFFF
-#define GREY  0x5AEB
+#define GREY 0x5AEB
 
 #include <TFT_eSPI.h> // Graphics and font library for ST7735 driver chip
 
-TFT_eSPI tft = TFT_eSPI();  // Invoke library, pins defined in User_Setup.h
+TFT_eSPI tft = TFT_eSPI(); // Invoke library, pins defined in User_Setup.h
 
 int16_t h = 128;
 int16_t w = 160;
@@ -55,7 +55,8 @@ void ball();
 void rpaddle();
 void lpaddle();
 
-void setup_display() {
+void setup_display()
+{
   tft.init();
 
   tft.setRotation(1);
@@ -67,20 +68,17 @@ void setup_display() {
 }
 
 // void setup(void) {
-  
-//   randomSeed(analogRead(0)*analogRead(1));
-   
 
-  
+//   randomSeed(analogRead(0)*analogRead(1));
+
 //   initgame();
 
-  
-
 //   delay(2000);
-  
+
 // }
 
-void play_game() {
+void play_game()
+{
   delay(dly);
 
   lpaddle();
@@ -89,102 +87,128 @@ void play_game() {
   midline();
 
   ball();
-
 }
 
-void initgame() {
+void initgame()
+{
   lpaddle_y = random(0, h - paddle_h);
   rpaddle_y = random(0, h - paddle_h);
 
   // ball is placed on the center of the left paddle
   ball_y = lpaddle_y + (paddle_h / 2);
-  
+
   calc_target_y();
 
   midline();
 
-  tft.fillRect(0,h-26,w,h-1,BLACK);
+  tft.fillRect(0, h - 26, w, h - 1, BLACK);
 
   tft.setTextDatum(TC_DATUM);
   tft.setTextColor(WHITE);
-  tft.drawString("TFT_eSPI example", w/2, h-26 , 2);
+  tft.drawString("TFT_eSPI example", w / 2, h - 26, 2);
 }
 
-void midline() {
+void midline()
+{
 
   // If the ball is not on the line then don't redraw the line
-  if ((ball_x<dashline_x-ball_w) && (ball_x > dashline_x+dashline_w)) return;
+  if ((ball_x < dashline_x - ball_w) && (ball_x > dashline_x + dashline_w))
+    return;
 
   tft.startWrite();
 
   // Quick way to draw a dashed line
   tft.setAddrWindow(dashline_x, 0, dashline_w, h);
-  
-  for(int16_t i = 0; i < dashline_n; i+=2) {
-    tft.pushColor(WHITE, dashline_w*dashline_h); // push dash pixels
-    tft.pushColor(BLACK, dashline_w*dashline_h); // push gap pixels
+
+  for (int16_t i = 0; i < dashline_n; i += 2)
+  {
+    tft.pushColor(WHITE, dashline_w * dashline_h); // push dash pixels
+    tft.pushColor(BLACK, dashline_w * dashline_h); // push gap pixels
   }
 
   tft.endWrite();
 }
 
-void lpaddle() {
-  
-  if (lpaddle_d == 1) {
+void lpaddle()
+{
+
+  if (lpaddle_d == 1)
+  {
     tft.fillRect(lpaddle_x, lpaddle_y, paddle_w, 1, BLACK);
-  } 
-  else if (lpaddle_d == -1) {
+  }
+  else if (lpaddle_d == -1)
+  {
     tft.fillRect(lpaddle_x, lpaddle_y + paddle_h - 1, paddle_w, 1, BLACK);
   }
 
   lpaddle_y = lpaddle_y + lpaddle_d;
 
-  if (ball_dx == 1) lpaddle_d = 0;
-  else {
-    if (lpaddle_y + paddle_h / 2 == target_y) lpaddle_d = 0;
-    else if (lpaddle_y + paddle_h / 2 > target_y) lpaddle_d = -1;
-    else lpaddle_d = 1;
+  if (ball_dx == 1)
+    lpaddle_d = 0;
+  else
+  {
+    if (lpaddle_y + paddle_h / 2 == target_y)
+      lpaddle_d = 0;
+    else if (lpaddle_y + paddle_h / 2 > target_y)
+      lpaddle_d = -1;
+    else
+      lpaddle_d = 1;
   }
 
-  if (lpaddle_y + paddle_h >= h && lpaddle_d == 1) lpaddle_d = 0;
-  else if (lpaddle_y <= 0 && lpaddle_d == -1) lpaddle_d = 0;
+  if (lpaddle_y + paddle_h >= h && lpaddle_d == 1)
+    lpaddle_d = 0;
+  else if (lpaddle_y <= 0 && lpaddle_d == -1)
+    lpaddle_d = 0;
 
   tft.fillRect(lpaddle_x, lpaddle_y, paddle_w, paddle_h, WHITE);
 }
 
-void rpaddle() {
-  
-  if (rpaddle_d == 1) {
+void rpaddle()
+{
+
+  if (rpaddle_d == 1)
+  {
     tft.fillRect(rpaddle_x, rpaddle_y, paddle_w, 1, BLACK);
-  } 
-  else if (rpaddle_d == -1) {
+  }
+  else if (rpaddle_d == -1)
+  {
     tft.fillRect(rpaddle_x, rpaddle_y + paddle_h - 1, paddle_w, 1, BLACK);
   }
 
   rpaddle_y = rpaddle_y + rpaddle_d;
 
-  if (ball_dx == -1) rpaddle_d = 0;
-  else {
-    if (rpaddle_y + paddle_h / 2 == target_y) rpaddle_d = 0;
-    else if (rpaddle_y + paddle_h / 2 > target_y) rpaddle_d = -1;
-    else rpaddle_d = 1;
+  if (ball_dx == -1)
+    rpaddle_d = 0;
+  else
+  {
+    if (rpaddle_y + paddle_h / 2 == target_y)
+      rpaddle_d = 0;
+    else if (rpaddle_y + paddle_h / 2 > target_y)
+      rpaddle_d = -1;
+    else
+      rpaddle_d = 1;
   }
 
-  if (rpaddle_y + paddle_h >= h && rpaddle_d == 1) rpaddle_d = 0;
-  else if (rpaddle_y <= 0 && rpaddle_d == -1) rpaddle_d = 0;
+  if (rpaddle_y + paddle_h >= h && rpaddle_d == 1)
+    rpaddle_d = 0;
+  else if (rpaddle_y <= 0 && rpaddle_d == -1)
+    rpaddle_d = 0;
 
   tft.fillRect(rpaddle_x, rpaddle_y, paddle_w, paddle_h, WHITE);
 }
 
-void calc_target_y() {
+void calc_target_y()
+{
   int16_t target_x;
   int16_t reflections;
   int16_t y;
 
-  if (ball_dx == 1) {
+  if (ball_dx == 1)
+  {
     target_x = w - ball_w;
-  } 
-  else {
+  }
+  else
+  {
     target_x = -1 * (w - ball_w);
   }
 
@@ -192,38 +216,47 @@ void calc_target_y() {
 
   reflections = floor(y / h);
 
-  if (reflections % 2 == 0) {
+  if (reflections % 2 == 0)
+  {
     target_y = y % h;
-  } 
-  else {
+  }
+  else
+  {
     target_y = h - (y % h);
   }
 }
 
-void ball() {
+void ball()
+{
   ball_x = ball_x + ball_dx;
   ball_y = ball_y + ball_dy;
 
-  if (ball_dx == -1 && ball_x == paddle_w && ball_y + ball_h >= lpaddle_y && ball_y <= lpaddle_y + paddle_h) {
-    ball_dx = ball_dx * -1;
-    dly = random(5); // change speed of ball after paddle contact
-    calc_target_y(); 
-  } else if (ball_dx == 1 && ball_x + ball_w == w - paddle_w && ball_y + ball_h >= rpaddle_y && ball_y <= rpaddle_y + paddle_h) {
+  if (ball_dx == -1 && ball_x == paddle_w && ball_y + ball_h >= lpaddle_y && ball_y <= lpaddle_y + paddle_h)
+  {
     ball_dx = ball_dx * -1;
     dly = random(5); // change speed of ball after paddle contact
     calc_target_y();
-  } else if ((ball_dx == 1 && ball_x >= w) || (ball_dx == -1 && ball_x + ball_w < 0)) {
+  }
+  else if (ball_dx == 1 && ball_x + ball_w == w - paddle_w && ball_y + ball_h >= rpaddle_y && ball_y <= rpaddle_y + paddle_h)
+  {
+    ball_dx = ball_dx * -1;
+    dly = random(5); // change speed of ball after paddle contact
+    calc_target_y();
+  }
+  else if ((ball_dx == 1 && ball_x >= w) || (ball_dx == -1 && ball_x + ball_w < 0))
+  {
     dly = 5;
   }
 
-  if (ball_y > h - ball_w || ball_y < 0) {
+  if (ball_y > h - ball_w || ball_y < 0)
+  {
     ball_dy = ball_dy * -1;
     ball_y += ball_dy; // Keep in bounds
   }
 
-  //tft.fillRect(oldball_x, oldball_y, ball_w, ball_h, BLACK);
+  // tft.fillRect(oldball_x, oldball_y, ball_w, ball_h, BLACK);
   tft.drawRect(oldball_x, oldball_y, ball_w, ball_h, BLACK); // Less TFT refresh aliasing than line above for large balls
-  tft.fillRect(   ball_x,    ball_y, ball_w, ball_h, WHITE);
+  tft.fillRect(ball_x, ball_y, ball_w, ball_h, WHITE);
   oldball_x = ball_x;
   oldball_y = ball_y;
 }

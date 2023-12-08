@@ -1,6 +1,5 @@
 #include <i2c.h>
 #include "Adafruit_VL53L0X.h"
-
 int sensor1, sensor2, sensor3, sensor4, sensor5, sensor6;
 int tof1, tof2, tof3, tof4, tof5, tof6;
 
@@ -54,7 +53,7 @@ void startToFs()
     if (!lox5.begin())
     {
         Serial.println(F("Failed to boot VL53L0X 5"));
-        _blink(5, 300, 100, 1000); 
+        _blink(5, 300, 100, 1000);
     }
 
     TCA9548A(5);
@@ -65,9 +64,8 @@ void startToFs()
     }
 }
 
-
 void read_tof_sensors()
-{   
+{
     startToFs();
     TCA9548A(0);
     lox1.rangingTest(&measure1, false);
@@ -75,14 +73,15 @@ void read_tof_sensors()
     if (measure1.RangeStatus != 4)
     { // phase failures have incorrect data
       //  Serial.print("Distance (mm): ");
-        sensor1 =  measure1.RangeMilliMeter;
-      //  Serial.println(measure1.RangeMilliMeter);
+        sensor1 = measure1.RangeMilliMeter;
+        //  Serial.println(measure1.RangeMilliMeter);
     }
     else
-    {   
+    {
         sensor1 = 8000;
     }
-    if (sensor1 > 8000){
+    if (sensor1 > 8000)
+    {
         sensor1 = 8000;
     }
 
@@ -92,15 +91,16 @@ void read_tof_sensors()
     if (measure2.RangeStatus != 4)
     { // phase failures have incorrect data
       //   Serial.print("Distance (mm): ");
-        sensor2 =  measure2.RangeMilliMeter;
-      //  Serial.println(measure2.RangeMilliMeter);
+        sensor2 = measure2.RangeMilliMeter;
+        //  Serial.println(measure2.RangeMilliMeter);
     }
     else
     {
         sensor2 = 8000;
     }
 
-        if (sensor2 > 8000){
+    if (sensor2 > 8000)
+    {
         sensor2 = 8000;
     }
 
@@ -109,19 +109,19 @@ void read_tof_sensors()
 
     if (measure3.RangeStatus != 4)
     { // phase failures have incorrect data
-     //   Serial.print("Distance (mm): ");
+      //   Serial.print("Distance (mm): ");
         sensor3 = measure3.RangeMilliMeter;
-      //  Serial.println(measure3.RangeMilliMeter);
+        //  Serial.println(measure3.RangeMilliMeter);
     }
     else
     {
         sensor3 = 8000;
     }
 
-        if (sensor3 > 8000){
+    if (sensor3 > 8000)
+    {
         sensor3 = 8000;
     }
-
 
     TCA9548A(3);
     lox4.rangingTest(&measure4, false);
@@ -130,72 +130,74 @@ void read_tof_sensors()
     { // phase failures have incorrect data
       //  Serial.print("Distance (mm): ");
         sensor4 = measure4.RangeMilliMeter;
-      //  Serial.println(measure4.RangeMilliMeter);
+        //  Serial.println(measure4.RangeMilliMeter);
     }
     else
     {
         sensor4 = 8000;
     }
 
-        if (sensor4 > 8000){
+    if (sensor4 > 8000)
+    {
         sensor4 = 8000;
     }
-
 
     TCA9548A(4);
     lox5.rangingTest(&measure5, false);
 
     if (measure5.RangeStatus != 4)
     { // phase failures have incorrect data
-     //   Serial.print("Distance (mm): ");
+      //   Serial.print("Distance (mm): ");
         sensor5 = measure5.RangeMilliMeter;
-    //  Serial.println(measure5.RangeMilliMeter);
+        //  Serial.println(measure5.RangeMilliMeter);
     }
     else
     {
         sensor5 = 8000;
     }
 
-        if (sensor5 > 8000){
+    if (sensor5 > 8000)
+    {
         sensor5 = 8000;
     }
-
 
     TCA9548A(5);
     lox6.rangingTest(&measure6, false);
 
     if (measure6.RangeStatus != 4)
     { // phase failures have incorrect data
-        //Serial.print("Distance (mm): ");
+        // Serial.print("Distance (mm): ");
         sensor6 = measure6.RangeMilliMeter;
-        //Serial.println(measure6.RangeMilliMeter);
+        // Serial.println(measure6.RangeMilliMeter);
     }
     else
     {
         sensor6 = 8000;
     }
 
-        if (sensor6 > 8000){
+    if (sensor6 > 8000)
+    {
         sensor6 = 8000;
     }
 }
 
 void read_tof_sensors_guard()
-{   
+{
     TCA9548A(0);
     lox1.rangingTest(&measure1, false);
 
     if (measure1.RangeStatus != 4)
     { // phase failures have incorrect data
       //  Serial.print("Distance (mm): ");
-        sensor1 =  measure1.RangeMilliMeter;
-      //  Serial.println(measure1.RangeMilliMeter);
+        sensor1 = measure1.RangeMilliMeter;
+        //  Serial.println(measure1.RangeMilliMeter);
     }
     else
-    {   
+    {
         sensor1 = 8000;
     }
-    if (sensor1 > 8000){
+    if (sensor1 > 8000)
+    {
         sensor1 = 8000;
     }
 
@@ -205,15 +207,16 @@ void read_tof_sensors_guard()
     if (measure2.RangeStatus != 4)
     { // phase failures have incorrect data
       //   Serial.print("Distance (mm): ");
-        sensor2 =  measure2.RangeMilliMeter;
-      //  Serial.println(measure2.RangeMilliMeter);
+        sensor2 = measure2.RangeMilliMeter;
+        //  Serial.println(measure2.RangeMilliMeter);
     }
     else
     {
         sensor2 = 8000;
     }
 
-        if (sensor2 > 8000){
+    if (sensor2 > 8000)
+    {
         sensor2 = 8000;
     }
 
@@ -222,19 +225,19 @@ void read_tof_sensors_guard()
 
     if (measure3.RangeStatus != 4)
     { // phase failures have incorrect data
-     //   Serial.print("Distance (mm): ");
+      //   Serial.print("Distance (mm): ");
         sensor3 = measure3.RangeMilliMeter;
-      //  Serial.println(measure3.RangeMilliMeter);
+        //  Serial.println(measure3.RangeMilliMeter);
     }
     else
     {
         sensor3 = 8000;
     }
 
-        if (sensor3 > 8000){
+    if (sensor3 > 8000)
+    {
         sensor3 = 8000;
     }
-
 
     TCA9548A(3);
     lox4.rangingTest(&measure4, false);
@@ -243,14 +246,15 @@ void read_tof_sensors_guard()
     { // phase failures have incorrect data
       //  Serial.print("Distance (mm): ");
         sensor4 = measure4.RangeMilliMeter;
-      //  Serial.println(measure4.RangeMilliMeter);
+        //  Serial.println(measure4.RangeMilliMeter);
     }
     else
     {
         sensor4 = 8000;
     }
 
-        if (sensor4 > 8000){
+    if (sensor4 > 8000)
+    {
         sensor4 = 8000;
     }
 }
@@ -260,7 +264,7 @@ void print_tof()
     read_tof_sensors();
     Serial.print(sensor1);
     Serial.print(" ");
-    Serial.print(sensor2);    
+    Serial.print(sensor2);
     Serial.print(" ");
     Serial.print(sensor3);
     Serial.print(" ");
@@ -283,5 +287,3 @@ void return_tof_val()
     tof5 = sensor5;
     tof6 = sensor6;
 }
-
-

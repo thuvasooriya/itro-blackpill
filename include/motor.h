@@ -1,5 +1,6 @@
 #include <helper.h>
 #include <Servo.h>
+#include <ultrasonic.h>
 
 int offset = 0;
 // ### speed and delays ###
@@ -36,9 +37,9 @@ bool on_line;
 
 int junction_detection_count = 0;
 
-//Servo
+// Servo
 Servo rot_servo;
-Servo lin_servo;  // create servo object to control a servo
+Servo lin_servo; // create servo object to control a servo
 // twelve servo objects can be created on most boards
 int init_rot_pos = 5;
 int init_lin_pos = 65;
@@ -175,7 +176,7 @@ void scanLeft(int times, int count)
   while (ct < times)
   {
     countA = 0;
-    while (countA < count) //100
+    while (countA < count) // 100
     {
       set_ccw();
       set_speed(75, 75);
@@ -194,7 +195,7 @@ void scanRight(int times, int count)
   while (ct < times)
   {
     countA = 0;
-    while (countA < count) //100
+    while (countA < count) // 100
     {
       set_cw();
       set_speed(75, 75);
@@ -462,7 +463,7 @@ void handle_edge_cases()
     if (junction)
     {
       junction_detection_count++;
-            Serial.println("left turn2");
+      Serial.println("left turn2");
       sharpLeft2(avg_speed);
     }
   }
@@ -487,7 +488,7 @@ void move_arm(int angle)
 
 void lift_box(int dist)
 {
-   open_arm(50);
+  open_arm(50);
   delay(500);
   move_arm(lower_pos);
   go_cms(dist);
@@ -499,7 +500,7 @@ void lift_box(int dist)
   move_arm(upper_pos);
   delay(500);
   reverse_cms(dist);
-    delay(500);
+  delay(500);
 }
 
 void drop_box(int dist)
@@ -530,7 +531,7 @@ void pull_box(int dist)
   close_arm();
   delay(500);
   reverse_cms(50);
-    delay(500);
+  delay(500);
 }
 
 void release_box(int dist)

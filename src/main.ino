@@ -1,5 +1,4 @@
 #include <motor.h>
-#include <color_sensor.h>
 #include <sound.h>
 #include <math.h>
 #include <guard_robot.h>
@@ -45,15 +44,15 @@ void setup()
   pinMode(encoderInB, INPUT);
   attachInterrupt(digitalPinToInterrupt(encoderInB), encIncrementB, RISING);
 
-rot_servo.attach(SER_R);  // attaches the servo on GIO2 to the servo object
-rot_servo.write(init_rot_pos);
-lin_servo.attach(SER_L);
-lin_servo.write(upper_pos);
+  rot_servo.attach(SER_R); // attaches the servo on GIO2 to the servo object
+  rot_servo.write(init_rot_pos);
+  lin_servo.attach(SER_L);
+  lin_servo.write(upper_pos);
 
   Serial.begin(9600);
   brake_fast();
   Wire.begin();
-  startToFs();
+  // startToFs();
   //   if (!lox.begin())
   // {
   //     Serial.println(F("Failed to boot VL53L0X 1"));
@@ -72,15 +71,17 @@ void loop()
     switch (level)
     {
     case 0:
+      Serial.println(is_obstacle_ahead());
+
       // detect_box();
       // level = 2;
-      set_forward();
-      set_speed(125,125);
-      print_tof();
-      delay(400);
-      brake_fast();
-      print_tof();
-      delay(500);
+      // set_forward();
+      // set_speed(125,125);
+      // print_tof();
+      // delay(400);
+      // brake_fast();
+      // print_tof();
+      // delay(500);
       // line_following_only();
       // time = millis();
       // if (time - ex_millis >= 100)
@@ -89,25 +90,24 @@ void loop()
       //   wall_follow();
       // }
 
+      //  ex_millis = millis();
+      //  while(true)
+      //  {
+      //     line_following();
+      //     time = millis();
+      //     if ((time - ex_millis) > 500){
+      //       break;
+      //     }
 
-    //  ex_millis = millis();
-    //  while(true)
-    //  {
-    //     line_following();
-    //     time = millis();
-    //     if ((time - ex_millis) > 500){
-    //       break;
-    //     }
+      //  }
+      //   Serial.println("line following end1");
+      //   brake_fast();
+      //   delay(1000);
+      //   wall_follow();
 
-    //  }
-    //   Serial.println("line following end1");
-    //   brake_fast();
-    //   delay(1000);
-    //   wall_follow();
-
-   //   pick_box();
-  // pull_box(15);
-  // level = 1;
+      //   pick_box();
+      // pull_box(15);
+      // level = 1;
       break;
     case 2:
       break;
@@ -203,12 +203,12 @@ void pick_box()
   brake_fast();
   delay(1000);
   align_center();
-  path_color = detect_color();
+  path_color = detect_path_color();
   int ctt = 0;
   while ((path_color != "red") and (path_color != "blue") and (ctt < 5))
   {
     scanLeft(1, 100);
-    path_color = detect_color();
+    path_color = detect_path_color();
     ctt++;
   }
   align_center();
@@ -216,7 +216,7 @@ void pick_box()
   while ((path_color != "red") and (path_color != "blue") and (ctt < 5))
   {
     scanRight(1, 300);
-    path_color = detect_color();
+    path_color = detect_path_color();
     ctt++;
   }
   align_center();
@@ -270,147 +270,165 @@ void pick_box()
 }
 
 void wall_follow()
-{   String scanDir;
-    Serial.println("wall check");
+{
+  String scanDir;
+  Serial.println("wall check");
+  read_tof_sensors();
+  Serial.println("finished reading");
+  tof1 = sensor1;
+  tof2 = sensor2;
+  tof3 = sensor3;
+  tof4 = sensor4;
+  tof5 = sensor5; // tof1 = sensor1;
+  // read_tof_sensors();
+  Serial.print(tof1);
+  Serial.print(" ");
+  Serial.print(tof2);
+  Serial.print(" ");
+  Serial.print(tof3);
+  Serial.print(" ");
+  Serial.print(tof4);
+  Serial.print(" ");
+  Serial.print(tof5);
+  // Serial.print(" ");
+  // Serial.print(sensor6);
+  Serial.println(" ");
+  if ((tof1 < 100) or (tof2 < 100) or (tof3 < 100) or (tof4 < 100))
+  {
+    Serial.println("Inside first brake ");
+    brake_fast();
+    delay(1000);
     read_tof_sensors();
-    Serial.println("finished reading");
-    tof1 = sensor1; tof2 = sensor2; tof3 = sensor3; tof4 = sensor4; tof5 = sensor5; //tof1 = sensor1; 
-    // read_tof_sensors();
-    Serial.print(tof1);
-    Serial.print(" ");
-    Serial.print(tof2);    
-    Serial.print(" ");
-    Serial.print(tof3);
-    Serial.print(" ");
-    Serial.print(tof4);
-    Serial.print(" ");
-    Serial.print(tof5);
-    // Serial.print(" ");
-    // Serial.print(sensor6);
-    Serial.println(" ");
-    if ((tof1 < 100) or (tof2 < 100) or (tof3 < 100) or (tof4 < 100))
-    { 
-        Serial.println("Inside first brake ");
-        brake_fast();
-        delay(1000);
-        read_tof_sensors();
-        tof1 = sensor1; tof2 = sensor2; tof3 = sensor3; tof4 = sensor4; tof5 = sensor5; //tof1 = sensor1; 
-        Serial.println("Second Read Finished");
-        //readTof
-        if ((tof1 < tof2) or (tof2 < tof3) or (tof3 < tof4)){
-        Serial.println("ifff 1");
-           // scanLeft(3);
-            scanDir = "left";
-            Serial.println("ScaLe");
-
-        }
-        else if ((tof1 > tof2) or (tof2 > tof3) or (tof3 > tof4))
-        {
-        Serial.println("ifff 2");
-          //  scanRight(3);
-            scanDir = "Right";
-                        Serial.println("ScaRight");
-        }
-        //
-        Serial.println("Third");
-        if (scanDir == "left") {
-                                  Serial.println("sec left if");
-            if (tof5 < 80){
-               // scanLeft(1);
-                delay(10);
-            }
-            else if (tof5 > 80){
-              //  scanRight(1);
-                delay(10);
-            }
-          //  go_cms(4);
-        }
-        while(digitalRead(IR3) == 0)
-        {
-            set_forward();
-            set_speed(80,80);
-        }
-        brake_fast();
-        delay(1000);
-       // scanLeft(3);
-        } else if (scanDir == "right"){
-            if (tof5 < 80){
-              //  scanRight(1);
-                delay(10);
-            }
-            else if (tof5 > 80){
-              //  scanLeft(1);
-                delay(10);
-            go_cms(4);
-        }
-        while(digitalRead(IR3) == 0)
-        {
-            set_forward();
-            set_speed(80,80);
-        }
-        brake_fast();
-        delay(1000);
-            //scanRight(3);
-        }
+    tof1 = sensor1;
+    tof2 = sensor2;
+    tof3 = sensor3;
+    tof4 = sensor4;
+    tof5 = sensor5; // tof1 = sensor1;
+    Serial.println("Second Read Finished");
+    // readTof
+    if ((tof1 < tof2) or (tof2 < tof3) or (tof3 < tof4))
+    {
+      Serial.println("ifff 1");
+      // scanLeft(3);
+      scanDir = "left";
+      Serial.println("ScaLe");
     }
+    else if ((tof1 > tof2) or (tof2 > tof3) or (tof3 > tof4))
+    {
+      Serial.println("ifff 2");
+      //  scanRight(3);
+      scanDir = "Right";
+      Serial.println("ScaRight");
+    }
+    //
+    Serial.println("Third");
+    if (scanDir == "left")
+    {
+      Serial.println("sec left if");
+      if (tof5 < 80)
+      {
+        // scanLeft(1);
+        delay(10);
+      }
+      else if (tof5 > 80)
+      {
+        //  scanRight(1);
+        delay(10);
+      }
+      //  go_cms(4);
+    }
+    while (digitalRead(IR3) == 0)
+    {
+      set_forward();
+      set_speed(80, 80);
+    }
+    brake_fast();
+    delay(1000);
+    // scanLeft(3);
+  }
+  else if (scanDir == "right")
+  {
+    if (tof5 < 80)
+    {
+      //  scanRight(1);
+      delay(10);
+    }
+    else if (tof5 > 80)
+    {
+      //  scanLeft(1);
+      delay(10);
+      go_cms(4);
+    }
+    while (digitalRead(IR3) == 0)
+    {
+      set_forward();
+      set_speed(80, 80);
+    }
+    brake_fast();
+    delay(1000);
+    // scanRight(3);
+  }
+}
 
 void navigate_sound()
 {
-    while (soundLevel() < 200)
-    {
-        line_following();
-    } 
+  while (soundLevel() < 200)
+  {
+    line_following();
+  }
 }
 
 int proximity;
 bool is_box_detected = false;
 
 bool detect_box()
-{   int scanTimes = 0;
-    while (not(is_box_detected))
-    {   
+{
+  int scanTimes = 0;
+  while (not(is_box_detected))
+  {
+    read_tof_sensors();
+    while ((sensor2 > 300) or (sensor3 > 300))
+    {
+      scanLeft(1, 300);
       read_tof_sensors();
-      while ((sensor2 > 300) or (sensor3 > 300))
+      scanTimes++;
+      if (scanTimes > 1)
       {
-          scanLeft(1, 300);
-          read_tof_sensors();
-          scanTimes++;
-          if (scanTimes > 1){
-               break;
-          }
+        break;
       }
-      scanTimes = 0;
-          while ((sensor2 > 300) or (sensor3 > 300))
-      {
-          scanRight(1, 300);
-          read_tof_sensors();
-          scanTimes++;
-          if (scanTimes > 3){
-               break;
-          }
-      }
-      scanTimes = 0;
-          while ((sensor2 > 300) or (sensor3 >300))
-      {
-          scanLeft(1, 300);
-          read_tof_sensors();
-          scanTimes++;
-          if (scanTimes > 1){
-               break;
-          }
-    
-      }
-            read_tof_sensors();
-          int box_distance = min(sensor1, sensor2);
-          if (box_distance>300)
-          {
-               detect_box();
-          }
-          box_distance = floor(box_distance / 10);
-          lift_box(box_distance + 5);
-          is_box_detected = true;
-          align_center();
-      
     }
-    return is_box_detected;
+    scanTimes = 0;
+    while ((sensor2 > 300) or (sensor3 > 300))
+    {
+      scanRight(1, 300);
+      read_tof_sensors();
+      scanTimes++;
+      if (scanTimes > 3)
+      {
+        break;
+      }
+    }
+    scanTimes = 0;
+    while ((sensor2 > 300) or (sensor3 > 300))
+    {
+      scanLeft(1, 300);
+      read_tof_sensors();
+      scanTimes++;
+      if (scanTimes > 1)
+      {
+        break;
+      }
+    }
+    read_tof_sensors();
+    int box_distance = min(sensor1, sensor2);
+    if (box_distance > 300)
+    {
+      detect_box();
+    }
+    box_distance = floor(box_distance / 10);
+    lift_box(box_distance + 5);
+    is_box_detected = true;
+    align_center();
+  }
+  return is_box_detected;
 }
