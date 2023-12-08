@@ -33,7 +33,6 @@ String detect_color()
   else
   {
     Serial.println("No TCS34725 found ... check your connections");
-    while (1)
-      ;
+    // while (1) ;
   }
 }

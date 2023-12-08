@@ -69,9 +69,15 @@ void loop()
     switch (level)
     {
     case 0:
-      detect_box();
-      level = 2;
-      //print_tof();
+      // detect_box();
+      // level = 2;
+      set_forward();
+      set_speed(125,125);
+      print_tof();
+      delay(400);
+      brake_fast();
+      print_tof();
+      delay(500);
       // line_following_only();
       // time = millis();
       // if (time - ex_millis >= 100)

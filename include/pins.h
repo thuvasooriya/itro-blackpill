@@ -28,3 +28,7 @@
 // Servo Motors
 #define SER_L PA2
 #define SER_R PA1
+
+// Ultrasonic Sensors
+#define triggerPin PA2
+#define echoPin PA1
