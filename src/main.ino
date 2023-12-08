@@ -37,6 +37,9 @@ void setup()
   pinMode(PWMA, OUTPUT);
   pinMode(PWMB, OUTPUT);
 
+  pinMode(triggerPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+
   pinMode(encoderInA, INPUT);
   attachInterrupt(digitalPinToInterrupt(encoderInA), encIncrementA, RISING);
   pinMode(encoderInB, INPUT);

@@ -30,5 +30,5 @@
 #define SER_R PA1
 
 // Ultrasonic Sensors
-#define triggerPin PA2
-#define echoPin PA1
+#define triggerPin PC14
+#define echoPin PC15

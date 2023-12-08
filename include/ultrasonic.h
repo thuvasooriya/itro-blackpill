@@ -1,16 +1,13 @@
-const int triggerPin = 8;
-const int echoPin = 10;
+#include <Arduino.h>
+#include <pins.h>
+#include <motor.h>
+
 long duration;
 int distance;
 const float sec_to_microsec = 1000000.0;
 const float meter_to_cm = 100.0;
 const float speed_of_sound = 340.0; //meters per second
-
-void setup() {
-  pinMode(triggerPin, OUTPUT); // Set the triggerPin as an Output
-  pinMode(echoPin, INPUT); // Set the echoPin as an Input
-  Serial.begin(115200); // Start the serial communication
-}
+int obstacle_proximity = 10;
 
 int obstacle_distance() {
   // Initiate triggerPin as LOW
@@ -31,4 +28,13 @@ int obstacle_distance() {
   Serial.println(distance);
   delay(500);
   return distance;
+}
+
+bool is_obstacle_ahead()
+{
+    if((obstacle_distance() < obstacle_proximity))
+    {
+        return true;
+    }
+    return false;
 }
