@@ -1,6 +1,14 @@
 #include <helper.h>
 
 int offset = 0;
+int line_state = 0;
+int prev_line_state = 0;
+// int line_state_2 = 0;
+// 5 - all_black
+// 6 - all_white
+// 7 - left
+// 8 - right
+// -1,0,1 - center
 // ### speed and delays ###
 int max_speed = 255;
 int min_speed = 75;
@@ -8,12 +16,19 @@ int avg_speed = 125;
 int lsp, rsp;
 // counter measures
 int cm_speed = 100;
-int cm_delay = 200;
+int cm_delay = 100;
 int cm_counter = 0;
 int cm_max = 200;
 int chk_point_t = 4;
 
+int line_tracker = 0;
+
 int trn90 = 5800;
+
+int fa_10cm = 0;
+int fb_10cm = 0;
+int ra_10cm = 0;
+int rb_10cm = 0;
 
 // ### pid variables ###
 float kp = 8; // 1.2;
@@ -32,6 +47,7 @@ volatile int countB = 0;
 // check
 float pid_val;
 bool on_line;
+bool lf_override = false;
 
 int junction_detection_count = 0;
 
@@ -113,8 +129,7 @@ void brake_free()
   delay(20);
 }
 
-
-void U_turn()
+void u_turn()
 {
   countA = 0;
   while (countA < 2000)
@@ -315,6 +330,34 @@ void sharpRight3(int spd)
   delay(100);
 }
 
+void calibrate_encoder()
+{
+  bool cali_status = false;
+  set_forward();
+  set_speed(100, 100);
+  while (not cali_status)
+  {
+
+    countA = 0;
+    countB = 0;
+    if (allwhite())
+    {
+      set_speed(40, 40);
+      while (allwhite())
+      {
+        fa_10cm = countA;
+        fb_10cm = countB;
+      }
+    }
+    if (fa_10cm != 0 and fb_10cm != 0)
+    {
+      cali_status = true;
+    }
+  }
+  log("fa_10cm", fa_10cm);
+  log("fb_10cm", fb_10cm);
+}
+
 // void checkpoint_crossing()
 // {
 //   while (allwhite())
@@ -346,7 +389,7 @@ void sharpRight3(int spd)
 
 float calc_pid(int e)
 {
-  Serial.println("calculating pid...");
+  logtxt("calculating pid...");
   error = e * 4;
   pVal = kp * error;
   integral += error;
@@ -360,7 +403,7 @@ float calc_pid(int e)
 
 void do_pid(int pid)
 {
-  Serial.println("pid workin...");
+  logtxt("pid workin...");
   lsp = avg_speed - pid;
   rsp = avg_speed + pid;
   limit_pwm();
@@ -375,7 +418,7 @@ void counter_measures(int pos)
   {
     if (pos > 0)
     { // turnback when leaving line
-      Serial.print("cm: pos > 0");
+      logtxt("ccw");
       set_ccw();
       analogWrite(PWMA, cm_speed);
       analogWrite(PWMB, cm_speed);
@@ -383,7 +426,7 @@ void counter_measures(int pos)
     }
     else if (pos < 0)
     { // turnback when leaving line
-      Serial.print("cm: pos < 0");
+      logtxt("cw");
       set_cw();
       analogWrite(PWMA, cm_speed);
       analogWrite(PWMB, cm_speed);
@@ -391,11 +434,13 @@ void counter_measures(int pos)
     }
     else if (pos == 0)
     {
+      logtxt("U");
       // dead end from line, do a 180
-      U_turn();
+      u_turn();
     }
   }
   cm_counter++;
+  // log("cm_counter: ", cm_counter);
   level = (cm_counter > cm_max) ? 1 : 0;
 }
 
@@ -412,46 +457,433 @@ bool verify_checkpoint()
   return (t > chk_point_t) ? true : false;
 }
 
+void handle_checkpoint()
+{
+  if (level == 0)
+  {
+  }
+  else
+  {
+  }
+}
+
+void detect_junction()
+{
+}
+
+void handle_junction()
+{
+  if (level == 0)
+  {
+  }
+  else
+  {
+  }
+}
+
 void handle_edge_cases()
 {
-  // Serial.println("handling edge");
+  logtxt("handling edge");
   if (allblack())
   {
     counter_measures(offset);
   }
   else if (right_branch())
   {
-    Serial.println("right branch");
-    // // junction or right turn detected
+    logtxt("right turn");
+    // junction or right turn detected
+    // countA = 0;
+    // while (countA < 5400)
+    // {
+    //   set_forward();
+    //   set_speed(125, 120);
+    // }
+    // brake_fast();
+
+    // if (allblack())
+    // {
+    //   sharpRight3(avg_speed);
+    // }
+
+    cm_counter = 0;
+  }
+  else if (left_branch())
+  {
+    logtxt("left turn");
+    // junction or left turn detected
     countA = 0;
     while (countA < 5400)
     {
       set_forward();
       set_speed(125, 120);
     }
-    brake_fast();
+    // brake_fast();
 
     if (allblack())
     {
-      sharpRight3(avg_speed);
+      sharpLeft3(avg_speed);
     }
     cm_counter = 0;
   }
-  else if (left_branch())
-  {
-    Serial.println("left branch");
-    // left turn detected
-    sharpLeft2(avg_speed);
-    cm_counter = 0;
-  }
+  // {
+  //   logtxt("left turn");
+  //   // left turn detected
+  //   sharpLeft2(avg_speed);
+  //   cm_counter = 0;
+  // }
   else if (allwhite)
   {
-    bool junction = (verify_checkpoint()) ? false : true;
-    level = (junction) ? level : level++;
-    if (junction)
+    logtxt("tricky stuff");
+    bool checkpoint = (verify_checkpoint()) ? true : false;
+    // level = (checkpoint) ? level : level++;
+    if (checkpoint)
     {
-      junction_detection_count++;
-      sharpLeft2(avg_speed);
+      checkpoint_count++;
+      handle_checkpoint();
+      // sharpLeft2(avg_speed);
     }
+    else
+    {
+      junction_count++;
+      handle_junction();
+    }
+  }
+  handle_levels();
+}
+//////////////////////////////////////////////////////////////////
+//////////////// LINE FOLLOWING MAIN FUNCTION ////////////////////
+//////////////////////////////////////////////////////////////////
+void line_following_revised()
+{
+  if (lf_override)
+  {
+    logtxt("override called");
+  }
+  else
+  {
+    bool skip_state = false;
+    line_state = get_line_state();
+    log("line_state: ", line_state);
+
+    // ##### black #####
+    // #################
+    if (line_state == 5)
+    {
+      // if (prev_line_state == 5) // still black
+      // {
+      //   logtxt("still black");
+      //   // count to stop
+      // }
+      if (prev_line_state == 6) // white line ended
+      {
+        // junction logic
+        line_tracker = countA;
+        if (line_tracker > 2000)
+        {
+          // found a checkpoint
+          logtxt("checkpoint");
+          brake_fast();
+          line_tracker = 0;
+        }
+        else if (line_tracker > 300)
+        {
+          // found a line
+          // turn left
+          logtxt("line");
+          sharpLeft2(100);
+          line_tracker = 0;
+        }
+      }
+      else if (prev_line_state == 7) // left turn detection complete
+      {
+        // 90 degree left turn
+        logtxt("left");
+        sharpLeft2(100);
+      }
+      else if (prev_line_state == 8) // right turn detection complete
+      {
+        // 90 degree right turn
+        logtxt("right");
+        sharpRight2(100);
+      }
+      else if ((prev_line_state == -1) or (prev_line_state == 0) or (prev_line_state == 1))
+      {
+        // center line ended take uturn
+        logtxt("u turn");
+        u_turn();
+      }
+      else
+      { // usual pwm missing line
+        if (prev_line_state != 999)
+        {
+          if (prev_line_state > 0)
+          { // turnback when leaving line
+            logtxt("missed right");
+            set_ccw();
+            analogWrite(PWMA, cm_speed);
+            analogWrite(PWMB, cm_speed);
+            delay(cm_delay);
+          }
+          else if (prev_line_state < 0)
+          { // turnback when leaving line
+            logtxt("missed left");
+            set_cw();
+            analogWrite(PWMA, cm_speed);
+            analogWrite(PWMB, cm_speed);
+            delay(cm_delay);
+          }
+        }
+      }
+      cm_counter++;
+      // log("cm_counter: ", cm_counter);
+      level = (cm_counter > cm_max) ? 1 : 0;
+    }
+
+    // ##### white #####
+    // #################
+    else if (line_state == 6)
+    {
+      delay(cm_delay);
+      if (prev_line_state == 5) // white thing detected
+      {
+        logtxt("start white");
+        set_forward();
+        set_speed(avg_speed, avg_speed);
+        if (line_tracker == 0)
+        {
+          line_tracker = 1;
+          countA = 0;
+          countB = 0;
+        }
+        else
+        {
+          line_tracker = countA;
+        }
+      }
+      else if (prev_line_state == 6) // still white
+      {
+        logtxt("cont white");
+
+        set_forward();
+        set_speed(avg_speed, avg_speed);
+        if (line_tracker == 0)
+        {
+          line_tracker = 1;
+          countA = 0;
+          countB = 0;
+        }
+        else
+        {
+          line_tracker = countA;
+        }
+      }
+      // else if (prev_line_state == 7) // error ?
+      // {
+      //   // 90 degree left turn
+      // }
+      // else if (prev_line_state == 8) // error ?
+      // {
+      //   // 90 degree right turn
+      // }
+      else if ((prev_line_state == -1) or (prev_line_state == 0) or (prev_line_state == 1)) // center line ended
+      {
+        logtxt("t junction");
+        set_forward();
+        set_speed(avg_speed, avg_speed);
+        if (line_tracker == 0)
+        {
+          line_tracker = 1;
+          countA = 0;
+          countB = 0;
+        }
+        else
+        {
+          line_tracker = countA;
+        }
+      }
+      // else
+      // {
+      //   if (prev_line_state != 999)
+      //   {
+      //     if (prev_line_state > 0)
+      //     {
+      //     }
+      //     else if (prev_line_state < 0)
+      //     {
+      //     }
+      //   }
+      //   // cm_counter++;
+      //   // log("cm_counter: ", cm_counter);
+      //   // level = (cm_counter > cm_max) ? 1 : 0;
+      // }
+    }
+
+    // ##### left #####
+    // ################
+    else if (line_state == 7)
+    {
+      delay(cm_delay);
+      if (prev_line_state == 5) // found a left line
+      {
+        set_forward();
+        set_speed(avg_speed, avg_speed);
+        if (line_tracker == 0)
+        {
+          line_tracker = 1;
+          countA = 0;
+          countB = 0;
+        }
+        else
+        {
+          line_tracker = countA;
+        }
+        // sharpLeft2(100);
+      }
+      else if (prev_line_state == 6) // error ?
+      {
+        // just go left :)
+        sharpLeft2(100);
+      }
+      else if (prev_line_state == 7)
+      {
+        set_forward();
+        set_speed(avg_speed, avg_speed);
+        if (line_tracker == 0)
+        {
+          line_tracker = 1;
+          countA = 0;
+          countB = 0;
+        }
+        else
+        {
+          line_tracker = countA;
+        }
+      }
+      else if (prev_line_state == 8) // error?
+      {
+      }
+      else if ((prev_line_state == -1) or (prev_line_state == 0) or (prev_line_state == 1)) // left turn detected
+      {
+        set_forward();
+        set_speed(avg_speed, avg_speed);
+        if (line_tracker == 0)
+        {
+          line_tracker = 1;
+          countA = 0;
+          countB = 0;
+        }
+        else
+        {
+          line_tracker = countA;
+        }
+      }
+      else
+      {
+        if (prev_line_state != 999)
+        {
+          if (prev_line_state > 0)
+          {
+          }
+          else if (prev_line_state < 0)
+          {
+          }
+        }
+        // cm_counter++;
+        // log("cm_counter: ", cm_counter);
+        // level = (cm_counter > cm_max) ? 1 : 0;
+      }
+    }
+
+    // ##### right #####
+    // #################
+    else if (line_state == 8)
+    {
+      delay(cm_delay);
+      if (prev_line_state == 5) // found a right line
+      {
+      
+        set_forward();
+        set_speed(avg_speed, avg_speed);
+        if (line_tracker == 0)
+        {
+          line_tracker = 1;
+          countA = 0;
+          countB = 0;
+        }
+        else
+        {
+          line_tracker = countA;
+        }
+        // sharpRight2(100);
+      }
+      else if (prev_line_state == 6) // error
+      {
+      }
+      else if (prev_line_state == 7) // error ?
+      {
+      }
+      else if (prev_line_state == 8)
+      {
+        set_forward();
+        set_speed(avg_speed, avg_speed);
+        if (line_tracker == 0)
+        {
+          line_tracker = 1;
+          countA = 0;
+          countB = 0;
+        }
+        else
+        {
+          line_tracker = countA;
+        }
+      }
+      else if ((prev_line_state == -1) or (prev_line_state == 0) or (prev_line_state == 1)) // right turn detected
+      {
+        set_forward();
+        set_speed(avg_speed, avg_speed);
+        if (line_tracker == 0)
+        {
+          line_tracker = 1;
+          countA = 0;
+          countB = 0;
+        }
+        else
+        {
+          line_tracker = countA;
+        }
+      }
+      else
+      {
+        if (prev_line_state != 999)
+        {
+          if (prev_line_state > 0)
+          {
+          }
+          else if (prev_line_state < 0)
+          {
+          }
+        }
+        // cm_counter++;
+        // log("cm_counter: ", cm_counter);
+        // level = (cm_counter > cm_max) ? 1 : 0;
+      }
+    }
+    // ##### pwm #####
+    // ###############
+    else
+    {
+      if (not on_line)
+      {
+        prevError = 0;
+        integral = 0;
+        derivative = 0;
+      }
+      on_line = (line_state == (999 or 5 or 6 or 7 or 8)) ? false : true;
+      if (on_line)
+      {
+        do_pid(calc_pid(line_state));
+      }
+    }
+    prev_line_state = (skip_state) ? prev_line_state : line_state;
   }
 }

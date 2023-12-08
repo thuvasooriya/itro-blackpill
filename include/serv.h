@@ -1,5 +1,7 @@
-// #include <Servo.h>
-// // #define SER PB0
+#include <Servo.h>
+#include <Arduino.h>
+#include <pins.h>
+#define SER PB0
 
 // Servo myservo;  // create servo object to control a servo
 // // twelve servo objects can be created on most boards

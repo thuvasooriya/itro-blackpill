@@ -1,3 +1,4 @@
+#include <User_Setup.h>
 #include <Arduino.h>
 ///// board pin layout /////
 
@@ -48,7 +49,6 @@
 // A11 AN
 // A12 DG
 // B10 AN
-// B2  DG
 
 // # MOTORS #
 // A15 pwm
@@ -79,7 +79,7 @@
 // A5
 // A4
 // R
-// CS ????
+// B2 CS ????
 
 // # MIC #
 // A3
@@ -110,4 +110,6 @@ void setup_pins() {
   
   pinMode(encoderInA, INPUT);
   pinMode(encoderInB, INPUT);
+
+  pinMode(TFT_CS, OUTPUT);
 }

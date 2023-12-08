@@ -1,5 +1,9 @@
 #include <Arduino.h>
+#include <Wire.h>
+#include <SPI.h>
 #include <pins.h>
+#include <display.h>
+#include <levels.h>
 
 // logic when not using USB
 #define HWUART // comment this if you want to connect to USBSerial
@@ -7,10 +11,10 @@
 #define Serial Serial1
 #endif
 
-int level = 0;
-bool rekkit = false;
-unsigned long ex_millis = 0;
-int blink_state = 0;
+bool dev_mode = true;
+
+// unsigned long ex_millis = 0;
+// int blink_state = 0;
 
 // void blink(int t)
 // {
@@ -30,9 +34,9 @@ void blink(int x, int t1, int t2, int t3)
 {
   for (int i = 1; i <= x; ++i)
   {
-    digitalWrite(LED_BUILTIN, HIGH);
-    delay(t1);
     digitalWrite(LED_BUILTIN, LOW);
+    delay(t1);
+    digitalWrite(LED_BUILTIN, HIGH);
     delay(t2);
   }
   delay(t3);
@@ -51,22 +55,47 @@ void print_ir()
   Serial.println(digitalRead(IR5));
 }
 
+void reset_display()
+{
+  tft.setCursor(0, 0);
+  tft.fillScreen(BLACK);
+}
+
+void log(const char txt[], int x)
+{
+  Serial.print(txt);
+  Serial.println(x);
+  tft.startWrite();
+  tft.print(txt);
+  tft.println(x);
+  tft.endWrite();
+}
+void logtxt(const char txt[])
+{
+  if (not dev_mode)
+    return;
+  Serial.println(txt);
+  tft.startWrite();
+  tft.println(txt);
+  tft.endWrite();
+}
+
 void good_night()
 {
-  Serial.println("Bye Bye, Take Care");
+  logtxt("byeee");
   blink(10, 100, 50, 3000);
 }
 
 bool btn_hold(int t)
 {
   int btn_val = digitalRead(USER_BTN);
-
   if (btn_val == 1)
     return false;
   else
   {
-    Serial.println("btn_val: ");
-    Serial.print(btn_val);
+    // black pill has a pull up switch
+    logtxt("btn pressed");
+    // dwrite("btn pressed");
     int i = 0;
     while (btn_val == 0)
     {
@@ -76,8 +105,68 @@ bool btn_hold(int t)
       if (i > t)
         break;
     }
+    // blink(3, 100, 100, 1000);
     return true;
   }
+}
+
+int btn_hold_length()
+{
+  int btn_val = digitalRead(USER_BTN);
+  // log("btn val: ",btn_val);
+  // if (btn_val == 1)
+  //   return false;
+  // else
+  if (digitalRead(USER_BTN) == 1)
+    return 0;
+  else
+  {
+    // black pill has a pull up switch
+    int i = 0;
+    while (digitalRead(USER_BTN) == 0)
+    {
+      i++;
+      log("btn_t: ", i);
+      delay(100);
+      // blink(20);
+    }
+    // blink(3, 100, 100, 1000);
+    log("held len: ",i );
+    return i;
+  }
+}
+
+void level_switcher()
+{
+  logtxt("short press to nxt lvl");
+  logtxt("long press to start");
+
+  delay(500);
+  int val = btn_hold_length();
+  // log("val: ",val);
+  if (val < 10 and val > 0)
+  {
+    if (level < max_level)
+    {
+      level++;
+    }
+    else
+    {
+      level = 0;
+    }
+  }
+  else if (val > 10)
+  {
+    logtxt("starting in ... 3");
+    logtxt("reset to start over");
+    delay(1000);
+    logtxt("starting in ... 2");
+    delay(1000);
+    logtxt("starting in ... 1");
+    delay(1000);
+    rekkit = true;
+  }
+  log("lvl: ", level);
 }
 
 bool allblack()
@@ -108,6 +197,7 @@ int get_deviation()
   int r4 = digitalRead(IR4);
   int r5 = digitalRead(IR5);
   int deviation = 999;
+
   if (r1 == 0 and r2 == 0 and r3 == 0 and r4 == 0 and r5 == 1)
   {
     deviation = -4;
@@ -145,4 +235,77 @@ int get_deviation()
     deviation = 4;
   }
   return deviation;
+}
+
+int get_line_state()
+{
+  int r1 = digitalRead(IR1);
+  int r2 = digitalRead(IR2);
+  int r3 = digitalRead(IR3);
+  int r4 = digitalRead(IR4);
+  int r5 = digitalRead(IR5);
+  int state = 999;
+  if (r1 == 0 and r2 == 0 and r3 == 0 and r4 == 0 and r5 == 1)
+  {
+    state = -4;
+  }
+  else if (r1 == 0 and r2 == 0 and r3 == 0 and r4 == 1 and r5 == 1)
+  {
+    state = -3;
+  }
+  else if (r1 == 0 and r2 == 0 and r3 == 0 and r4 == 1 and r5 == 0)
+  {
+    state = -2;
+  }
+  else if (r1 == 0 and r2 == 0 and r3 == 1 and r4 == 1 and r5 == 0)
+  {
+    state = -1;
+  }
+  else if (r1 == 0 and r2 == 0 and r3 == 1 and r4 == 0 and r5 == 0)
+  {
+    state = 0;
+  }
+  else if (r1 == 0 and r2 == 1 and r3 == 1 and r4 == 0 and r5 == 0)
+  {
+    state = 1;
+  }
+  else if (r1 == 0 and r2 == 1 and r3 == 0 and r4 == 0 and r5 == 0)
+  {
+    state = 2;
+  }
+  else if (r1 == 1 and r2 == 1 and r3 == 0 and r4 == 0 and r5 == 0)
+  {
+    state = 3;
+  }
+  else if (r1 == 1 and r2 == 0 and r3 == 0 and r4 == 0 and r5 == 0)
+  {
+    state = 4;
+  }
+  else if (r1 == 0 and r2 == 0 and r3 == 0 and r4 == 0 and r5 == 0)
+  {
+    // black
+    state = 5;
+  }
+  else if (r1 == 1 and r2 == 1 and r3 == 1 and r4 == 1 and r5 == 1)
+  {
+    // white
+    state = 6;
+  }
+  else if ((r1 == 1 and r2 == 1 and r3 == 1 and r4 == 0 and r5 == 0) or (r1 == 1 and r2 == 1 and r3 == 1 and r4 == 1 and r5 == 0))
+  {
+    // left
+    state = 7;
+  }
+  else if ((r1 == 0 and r2 == 0 and r3 == 1 and r4 == 1 and r5 == 1) or (r1 == 0 and r2 == 1 and r3 == 1 and r4 == 1 and r5 == 1))
+  {
+    // right
+    state = 8;
+  }
+  return state;
+}
+
+void cleanup()
+{
+  if (tft.getCursorY() >= 120)
+    reset_display();
 }
