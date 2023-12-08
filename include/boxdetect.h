@@ -1,7 +1,8 @@
 // int proximity;
 // bool is_box_detected = false;
+// int box_detect_count = 0;
 
-// bool detect_box()
+// void detect_box()
 // {
 //      int scanTimes = 1;
 //      while (not(is_box_detected))
@@ -38,13 +39,14 @@
 //                }
 //                read_tof_sensors();
 //                int box_distance = min(sensor1, sensor2);
-//                if (box_distance > 400)
+//                if ((box_distance > 400) and (box_detect_count <3))
 //                {
 //                     detect_box();
+//                     box_detect_count++;
 //                }
 //                box_distance = box_distance / 10;
 //                lift_box(box_distance + 5);
+//                is_box_detected = true;
 //           }
 //      }
-//      return is_box_detected;
 // }

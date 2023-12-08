@@ -1,15 +1,12 @@
 // void ramp()
 // {
-//     while (allwhite())
-//     {
-//         set_forward();
-//         set_speed(avg_speed, avg_speed);
-//     }
+//     sharpRight3();
+//     go_cms(5);
 //     brake_fast();
 //     delay(1000);
 //     set_forward();
 //     set_speed(85, 85);
-//     while (not(verify_checkpoint()))
+//     while (not(allwhite()))
 //     {
 //         line_following();
 //     }
@@ -33,17 +30,34 @@
 //     delay(1000);
 //     sharpRight2();
 //     while (not(allwhite()))
-//         set_forward();
+//     set_forward();
 //     set_speed(avg_speed, avg_speed);
 //     {
 //         line_following();
 //     }
 //     brake_fast();
 //     delay(5000);
-//     pull_box();
-//     reverse_cms(55);
+//     pull_box(15);
+//     reverse_cms(5);
+//     while(not(right_branch()))
+//     {
+//         reverse_line_following();
+//     }
+//     brake_fast;
+//     delay(500);
+//     go_cms(10;)
 //     release_box();
-//     sharpRight3();
+//     while(not(right_branch()))
+//     {
+//          reverse_line_following();
+//     }
+//     brake_fast();
+//     delay(1000);
+//     move_arm(upper_pos);
+//     delay(500);
+//     close_arm();
+//     delay(500);
+//     sharpRight2();
 //     set_forward();
 //     set_speed(avg_speed, avg_speed);
 //     while (not(allwhite()))
@@ -51,16 +65,28 @@
 //         line_following();
 //     }
 //     brake_fast();
-//     go_cms(7);
+//     while(allwhite())
+//     {
+//     set_forward();
+//     set_speed(avg_speed, avg_speed);
+//     }
+//     brake_fast();
+//     delay(500);
 //     sharpLeft3();
+//     go_cms(5);
 //     set_forward();
 //     set_speed(avg_speed, avg_speed);
 //     while (not(allwhite()))
 //     {
 //         line_following();
 //     }
+//         while(allwhite())
+//     {
+//     set_forward();
+//     set_speed(avg_speed, avg_speed);
+//     }
 //     brake_fast();
-//     go_cms(7);
+//     delay(500);
 //     sharpRight3();
 //     set_forward();
 //     set_speed(avg_speed, avg_speed);
@@ -69,4 +95,6 @@
 //         line_following();
 //     }
 //     brake_fast();
+//     delay(1000);
+
 // }

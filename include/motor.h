@@ -1,6 +1,8 @@
 #include <helper.h>
 #include <Servo.h>
 #include <ultrasonic.h>
+#include <color_sensor.h>
+
 
 int offset = 0;
 // ### speed and delays ###
@@ -46,6 +48,8 @@ int init_lin_pos = 65;
 int arm_angle;
 int lower_pos = 150;
 int upper_pos = 10;
+
+String box_color = "";
 
 void encIncrementA()
 {
@@ -381,6 +385,17 @@ void do_pid(int pid)
   analogWrite(PWMB, rsp);
 }
 
+void do_pid_reverse(int pid)
+{
+  Serial.println("pid workin...");
+  lsp = avg_speed - pid;
+  rsp = avg_speed + pid;
+  limit_pwm();
+  set_back();
+  analogWrite(PWMA, lsp);
+  analogWrite(PWMB, rsp);
+}
+
 void counter_measures(int pos)
 {
   if (pos != 999)
@@ -493,6 +508,7 @@ void lift_box(int dist)
   move_arm(lower_pos);
   go_cms(dist);
   delay(500);
+  box_color = detect_box_color();
   open_arm(15);
   delay(500);
   close_arm();
@@ -536,14 +552,13 @@ void pull_box(int dist)
 
 void release_box(int dist)
 {
-  go_cms(dist);
   open_arm(20);
   delay(500);
   open_arm(50);
   delay(500);
-  reverse_cms(dist);
-  move_arm(upper_pos);
-  delay(500);
-  close_arm();
-  delay(500);
+  // reverse_cms(dist);
+  // move_arm(upper_pos);
+  // delay(500);
+  // close_arm();
+  // delay(500);
 }

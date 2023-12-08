@@ -1,17 +1,27 @@
-#include <motor.h>
 #include <sound.h>
 #include <math.h>
 #include <guard_robot.h>
+
 
 void line_following();
 void line_following_only();
 void pick_box();
 void wall_follow();
 void go_5cms_line(int i);
+void avoid_guard_robot();
+void detect_box();
+void navigate_sound();
+void reverse_line_following();
 
-String box_color = "";
+
 String path_color = "";
 unsigned long time;
+
+bool can_go = false;
+unsigned long ex_millis_1 = 0;
+unsigned long time1;
+int box_detect_count = 0;
+bool is_box_detected = false;
 
 // Adafruit_VL53L0X lox = Adafruit_VL53L0X();
 
@@ -143,6 +153,26 @@ void line_following()
   delay(20);
 }
 
+void reverse_line_following()
+{
+  offset = get_deviation();
+  print_ir();
+  on_line = (offset == 999) ? false : true;
+  if (on_line)
+    do_pid_reverse(calc_pid(offset));
+  else
+  {
+    prevError = 0;
+    integral = 0;
+    derivative = 0;
+    if (allblack())
+    {
+      counter_measures(offset);
+    }
+  }
+  delay(20);
+}
+
 void line_following_only()
 {
   offset = get_deviation();
@@ -195,11 +225,12 @@ void pick_box()
   sharpLeft2(avg_speed);
   set_forward();
   set_speed(avg_speed, avg_speed);
-  countA = 0;
-  while (countA < 4000)
-  {
-    line_following_only();
-  }
+  // countA = 0;
+  // while (countA < 4000)
+  // {
+  //   line_following_only();
+  // }
+  go_cms(20);
   brake_fast();
   delay(1000);
   align_center();
@@ -234,21 +265,20 @@ void pick_box()
   delay(2000);
   align_center();
   delay(1000);
-  int cctt = 0;
-  while (cctt < 5)
-  {
-    scanLeft(1, 100);
-    if (cctt == 3)
-    {
-      break;
-    }
-    cctt++;
-  }
-  go_cms(10);
+  // int cctt = 0;
+  // while (cctt < 5)
+  // {
+  //   scanLeft(1, 100);
+  //   if (cctt == 3)
+  //   {
+  //     break;
+  //   }
+  //   cctt++;
+  // }
+  // go_cms(10);
   // lift_bok();
   // detect_box_color();
-  box_color = "red";
-  reverse_cms(10);
+  detect_box();
   delay(2000);
   align_center();
   delay(1000);
@@ -262,11 +292,13 @@ void pick_box()
   }
   brake_free();
   delay(2000);
-  bool check = false;
-  while (not(check))
+  while (not(verify_checkpoint))
   {
     line_following();
   }
+  drop_box(8);
+  delay(1000);
+  sharpLeft2(avg_speed);
 }
 
 void wall_follow()
@@ -378,57 +410,141 @@ void navigate_sound()
   }
 }
 
-int proximity;
-bool is_box_detected = false;
 
-bool detect_box()
+
+void detect_box()
 {
-  int scanTimes = 0;
-  while (not(is_box_detected))
-  {
-    read_tof_sensors();
-    while ((sensor2 > 300) or (sensor3 > 300))
+     int scanTimes = 1;
+     while (not(is_box_detected))
+     {
+          read_tof_sensors();
+          while ((sensor2 > 400) and (sensor3 > 400))
+          {
+               scanLeft(1, 100);
+               read_tof_sensors();
+               scanTimes++;
+               if (scanTimes > 4)
+               {
+                    break;
+               }
+          }
+          while ((sensor2 > 400) or (sensor3 > 400))
+          {
+               scanRight(1, 100);
+               read_tof_sensors();
+               scanTimes++;
+               if (scanTimes > 8)
+               {
+                    break;
+               }
+          }
+          while ((sensor2 > 400) or (sensor3 > 400))
+          {
+               scanLeft(1, 100);
+               read_tof_sensors();
+               scanTimes++;
+               if (scanTimes > 4)
+               {
+                    break;
+               }
+               read_tof_sensors();
+               int box_distance = min(sensor1, sensor2);
+               if ((box_distance > 400) and (box_detect_count <3))
+               {
+                    detect_box();
+                    box_detect_count++;
+               }
+               box_distance = box_distance / 10;
+               lift_box(box_distance + 5);
+               is_box_detected = true;
+          }
+     }
+}
+
+void avoid_guard_robot()
+{
+    int c = 0;
+    while (c < 3)
     {
-      scanLeft(1, 300);
-      read_tof_sensors();
-      scanTimes++;
-      if (scanTimes > 1)
-      {
-        break;
-      }
+        startToFs();
+        delay(1000);
+        c++;
     }
-    scanTimes = 0;
-    while ((sensor2 > 300) or (sensor3 > 300))
+    while (not(can_go))
     {
-      scanRight(1, 300);
-      read_tof_sensors();
-      scanTimes++;
-      if (scanTimes > 3)
-      {
-        break;
-      }
+        read_tof_sensors_guard();
+        while ((sensor1 > 250) and (sensor4 > 250))
+        {
+            read_tof_sensors_guard();
+        }
+        if ((sensor1 > 250) and (sensor4 < 250))
+        {
+            ex_millis_1 = millis();
+            while (sensor1 > 250)
+            {
+                read_tof_sensors_guard();
+                time1 = millis();
+                if ((time1 - ex_millis_1) > 1000)
+                {
+                    break;
+                }
+            }
+            if (sensor1 < 250)
+            {
+                can_go = false;
+                continue;
+            }
+            else
+            {
+                can_go = true;
+                break;
+            }
+        }
+        else if ((sensor1 < 250) and (sensor4 > 250))
+        {
+            ex_millis_1 = millis();
+            while (sensor4 > 250)
+            {
+                read_tof_sensors_guard();
+                time1 = millis();
+                if ((time1 - ex_millis_1) > 1000)
+                {
+                    break;
+                }
+            }
+            if (sensor4 < 250)
+            {
+                can_go = true;
+                break;
+            }
+            else
+            {
+                can_go = false;
+                continue;
+            }
+        }
+        else
+        {
+            continue;
+        }
     }
-    scanTimes = 0;
-    while ((sensor2 > 300) or (sensor3 > 300))
-    {
-      scanLeft(1, 300);
-      read_tof_sensors();
-      scanTimes++;
-      if (scanTimes > 1)
-      {
-        break;
-      }
+    if (can_go){
+        go_cms(5);
+        set_forward();
+        set_speed(175, 175);
+        avg_speed = 175;
+        while(not(allwhite())){
+            line_following_only();
+        }
+        brake_fast();
+        sharpRight3(125);
+        set_forward();
+        set_speed(175, 175);
+        avg_speed = 175;
+        while(not(verify_checkpoint())){
+            line_following_only();
+        }
+        brake_fast();
+        //The End.....
     }
-    read_tof_sensors();
-    int box_distance = min(sensor1, sensor2);
-    if (box_distance > 300)
-    {
-      detect_box();
-    }
-    box_distance = floor(box_distance / 10);
-    lift_box(box_distance + 5);
-    is_box_detected = true;
-    align_center();
-  }
-  return is_box_detected;
 }
