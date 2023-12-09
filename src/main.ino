@@ -65,7 +65,7 @@ void setup()
   Serial.begin(9600);
   brake_fast();
   Wire.begin();
- // startToFs();
+  // startToFs();
   //   if (!lox.begin())
   // {
   //     logtxt(F("Failed to boot VL53L0X 1"));
@@ -78,51 +78,34 @@ void loop()
   // logtxt("rekkit: ");
   // logtxt(rekkit);
   // logtxt(digitalRead(USER_BTN));
-  rekkit = (btn_hold(20)) ? true : rekkit;
+  // rekkit = (btn_hold(10)) ? true : rekkit;
   if (rekkit)
   {
+    // logg("level: ", level);
     switch (level)
     {
     case 0:
-     nav_sound();
-        // logtxt(detect_path_color());
-      // detect_box();
-      // level = 2;
-      // set_forward();
-      // set_speed(125,125);
-      // print_tof();
-      // delay(400);
-      // brake_fast();
-      // print_tof();
-      // delay(500);
-      // line_following_only();
-      // time = millis();
-      // if (time - ex_millis >= 100)
-      // {
-      //   ex_millis = time;
-      //   wall_follow();
-      // }
-
-      //  ex_millis = millis();
-      //  while(true)
-      //  {
-      //     line_following();
-      //     time = millis();
-      //     if ((time - ex_millis) > 500){
-      //       break;
-      //     }
-
-      //  }
-      //   logtxt("line following end1");
-      //   brake_fast();
-      //   delay(1000);
-      //   wall_follow();
-
-      //   pick_box();
-      // pull_box(15);
-      // level = 1;
+      line_following(); // change
+      // line_following_revised();
+      // Serial.println(detect_box_color());
+      // Serial.println(detect_path_color());
+      // delay(100);
+    //  pick_box();
+      break;
+    case 1:
+      wall_follow();
       break;
     case 2:
+      ramp();
+      break;
+    case 3:
+      pick_box();
+      break;
+    case 4:
+      nav_sound();
+      break;
+    case 5:
+      avoid_guard_robot();
       break;
     default:
       brake_free();
@@ -132,8 +115,73 @@ void loop()
       break;
     }
   }
+  
   else
-    _blink(3, 300, 100, 1000);
+  { // fukin brackets
+    // log("rekkit: ", rekkit);
+
+    level_switcher();
+    _blink(level+1 , 200, 50, 500);
+  }
+  // rekkit = (btn_hold(20)) ? true : rekkit;
+  // if (rekkit)
+  // {
+  //   switch (level)
+  //   {
+  //   case 0:
+  //     Serial.println(detect_box_color());
+  //     delay(100);
+  // pick_box( );
+  //    // detect_box();
+  //       // logtxt(detect_path_color());
+  //     // detect_box();
+  //     // level = 2;
+  //     // set_forward();
+  //     // set_speed(125,125);
+  //   // print_tof();
+  //     // delay(400);
+  //     // brake_fast();
+  //     // print_tof();
+  //     // delay(500);
+  //     // line_following_only();
+  //     // time = millis();
+  //     // if (time - ex_millis >= 100)
+  //     // {
+  //     //   ex_millis = time;
+  //     //   wall_follow();
+  //     // }
+
+  //     //  ex_millis = millis();
+  //     //  while(true)
+  //     //  {
+  //     //     line_following();
+  //     //     time = millis();
+  //     //     if ((time - ex_millis) > 500){
+  //     //       break;
+  //     //     }
+
+  //     //  }
+  //     //   logtxt("line following end1");
+  //     //   brake_fast();
+  //     //   delay(1000);
+  //     //   wall_follow();
+
+  //     //   pick_box();
+  //     // pull_box(15);
+  //     // level = 1;
+  //     break;
+  //   case 2:
+  //     break;
+  //   default:
+  //     brake_free();
+  //     rekkit = false;
+  //     level = 0;
+  //     good_night();
+  //     break;
+  //   }
+  // }
+  // else
+  //   _blink(3, 300, 100, 1000);
 }
 
 void line_following()
@@ -233,7 +281,7 @@ void pick_box()
   // {
   //   line_following_only();
   // }
-  go_cms(20);
+  go_cms(15);
   brake_fast();
   delay(1000);
   align_center();
@@ -299,7 +347,7 @@ void pick_box()
   {
     line_following();
   }
-  drop_box(8);
+  drop_box(4);
   delay(1000);
   sharpLeft2(avg_speed);
   while(allwhite())
@@ -309,6 +357,7 @@ void pick_box()
   }
   brake_fast;
   delay(1000);
+  level = 4;
 }
 
 void wall_follow()
@@ -412,45 +461,45 @@ void wall_follow()
   }
 }
 
-void navigate_sound()
-{
-  ex_millis = millis();
-  while(not(right_branch()))
-  {
-    time = millis();
-    if ((time - ex_millis) > 100){
-      if (soundLevel() > 200){
-        brake_fast();
-        delay(100);
-      }
-    }
-    line_following_only();
-    ex_millis = time;
-  }
-  sharpRight2(125);
-  ex_millis = millis();
-  while(not(verify_checkpoint()))
-  {
-    time = millis();
-    if ((time - ex_millis) > 100){
-      if (soundLevel() > 200){
-        brake_fast();
-        delay(100);
-      }
-    }
-    line_following_only();
-    ex_millis = time;
-  }
-  brake_fast();
-  delay(1000);
-  while(allwhite())
-  {
-    set_forward();
-    set_speed(125,125);
-  }
-  brake_fast();
-  delay(200);
-}
+// void navigate_sound()
+// {
+//   ex_millis = millis();
+//   while(not(right_branch()))
+//   {
+//     time = millis();
+//     if ((time - ex_millis) > 100){
+//       if (soundLevel() > 200){
+//         brake_fast();
+//         delay(100);
+//       }
+//     }
+//     line_following_only();
+//     ex_millis = time;
+//   }
+//   sharpRight2(125);
+//   ex_millis = millis();
+//   while(not(verify_checkpoint()))
+//   {
+//     time = millis();
+//     if ((time - ex_millis) > 100){
+//       if (soundLevel() > 200){
+//         brake_fast();
+//         delay(100);
+//       }
+//     }
+//     line_following_only();
+//     ex_millis = time;
+//   }
+//   brake_fast();
+//   delay(1000);
+//   while(allwhite())
+//   {
+//     set_forward();
+//     set_speed(125,125);
+//   }
+//   brake_fast();
+//   delay(200);
+// }
 
 
 
@@ -460,7 +509,7 @@ void detect_box()
      while (not(is_box_detected))
      {
           read_tof_sensors();
-          while ((sensor2 > 400) and (sensor3 > 400))
+          while ((sensor2 > 400) or (sensor3 > 400))
           {
                scanLeft(1, 100);
                read_tof_sensors();
@@ -489,8 +538,11 @@ void detect_box()
                {
                     break;
                }
+          }
                read_tof_sensors();
-               int box_distance = min(sensor1, sensor2);
+               print_tof();
+               int box_distance = min(sensor2, sensor3);
+              Serial.println(box_distance);
                if ((box_distance > 400) and (box_detect_count <3))
                {
                     detect_box();
@@ -499,7 +551,7 @@ void detect_box()
                box_distance = box_distance / 10;
                lift_box(box_distance + 5);
                is_box_detected = true;
-          }
+
      }
 }
 
@@ -709,16 +761,17 @@ void ramp()
     delay(500);
     open_arm(5);
     move_arm(lower_pos);
-    // set_forward();
-    // set_speed(avg_speed, avg_speed);
-    // while (not(verify_checkpoint()))
-    // {
-    //     line_following_only();
-    // }
-    // brake_fast();
-    // delay(1000);
-    // move_arm(upper_pos);
-    // open_arm(init_rot_pos);
+    set_forward();
+    set_speed(avg_speed, avg_speed);
+    while (not(verify_checkpoint()))
+    {
+        line_following_only();
+    }
+    brake_fast();
+    delay(1000);
+    move_arm(upper_pos);
+    open_arm(init_rot_pos);
+    level = 3;
 }
 
 void nav_sound(){
@@ -737,7 +790,7 @@ void nav_sound(){
         set_speed(125,125);
       }
       brake_fast();
-      level = 3;
+      level = 5;
       break;
     }
     line_following_only();

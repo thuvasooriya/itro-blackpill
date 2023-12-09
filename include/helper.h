@@ -9,31 +9,32 @@
 #endif
 
 int level = 0;
+int max_level= 7;
 bool rekkit = false;
 unsigned long ex_millis = 0;
 int blink_state = 0;
 
-void blink(int t)
-{
-  unsigned long time = millis();
-  if (time - ex_millis >= t)
-  {
-    // save the last time you blinked the LED
-    ex_millis = time;
-    // if the LED is off turn it on and vice-versa:
-    blink_state = not blink_state;
-    // set the LED with the blink_state of the variable:
-    digitalWrite(LED_BUILTIN, blink_state);
-  }
-}
+// void blink(int t)
+// {
+//   unsigned long time = millis();
+//   if (time - ex_millis >= t)
+//   {
+//     // save the last time you blinked the LED
+//     ex_millis = time;
+//     // if the LED is off turn it on and vice-versa:
+//     blink_state = not blink_state;
+//     // set the LED with the blink_state of the variable:
+//     digitalWrite(LED_BUILTIN, blink_state);
+//   }
+// }
 
 void _blink(int x, int t1, int t2, int t3)
 {
   for (int i = 1; i <= x; ++i)
   {
-    digitalWrite(LED_BUILTIN, HIGH);
-    delay(t1);
     digitalWrite(LED_BUILTIN, LOW);
+    delay(t1);
+    digitalWrite(LED_BUILTIN, HIGH);
     delay(t2);
   }
   delay(t3);
@@ -100,6 +101,64 @@ void logtxt(const char txt[])
   tft.endWrite();
 }
 
+int btn_hold_length()
+{
+  int btn_val = digitalRead(USER_BTN);
+  // log("btn val: ",btn_val);
+  // if (btn_val == 1)
+  //   return false;
+  // else
+  if (digitalRead(USER_BTN) == 1)
+    return 0;
+  else
+  {
+    // black pill has a pull up switch
+    int i = 0;
+    while (digitalRead(USER_BTN) == 0)
+    {
+      i++;
+      logg("btn_t: ", i);
+      delay(100);
+      // blink(20);
+    }
+    // blink(3, 100, 100, 1000);
+    logg("held len: ",i );
+    return i;
+  }
+}
+
+void level_switcher()
+{
+  logtxt("short press to nxt lvl");
+  logtxt("long press to start");
+
+  delay(500);
+  int val = btn_hold_length();
+  // log("val: ",val);
+  if (val < 5 and val > 0)
+  {
+    if (level < max_level)
+    {
+      level++;
+    }
+    else
+    {
+      level = 0;
+    }
+  }
+  else if (val > 5)
+  {
+    logtxt("starting in ... 3");
+    logtxt("reset to start over");
+    delay(500);
+    logtxt("starting in ... 2");
+    delay(500);
+    logtxt("starting in ... 1");
+    delay(500);
+    rekkit = true;
+  }
+  logg("lvl: ", level);
+}
 
 bool allblack()
 {

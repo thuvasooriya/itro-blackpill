@@ -44,12 +44,12 @@ String detect_path_color()
 String detect_box_color()
 {
   String color;
-  TCA9548A(7);
-  if (tcs_path.begin())
+//  TCA9548A(7);
+  if (tcs_color.begin())
   {
     Serial.println("Found sensor");
     float r, g, b;
-    tcs_path.getRGB(&r, &g, &b);
+    tcs_color.getRGB(&r, &g, &b);
     if ((r > 120) and (r > b))
     {
       color = "red";

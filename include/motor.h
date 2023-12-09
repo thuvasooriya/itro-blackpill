@@ -550,7 +550,9 @@ void move_arm(int angle)
 
 void lift_box(int dist)
 {
+  Serial.println("before open arm");
   open_arm(50);
+    Serial.println("after");
   delay(500);
   move_arm(lower_pos);
   go_cms(dist);
