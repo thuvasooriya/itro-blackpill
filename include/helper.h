@@ -135,7 +135,7 @@ void level_switcher()
   delay(500);
   int val = btn_hold_length();
   // log("val: ",val);
-  if (val < 5 and val > 0)
+  if (val < 10 and val > 0)
   {
     if (level < max_level)
     {
@@ -146,7 +146,7 @@ void level_switcher()
       level = 0;
     }
   }
-  else if (val > 5)
+  else if (val > 10)
   {
     logtxt("starting in ... 3");
     logtxt("reset to start over");

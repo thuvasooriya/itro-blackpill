@@ -476,14 +476,21 @@ void counter_measures(int pos)
 bool verify_checkpoint()
 {
   int t = 0;
-  while (allwhite())
+  while (allwhite() or right_branch() or left_branch())
   {
     set_forward();
     set_speed(100, 100);
     delay(200);
     t++;
   }
-  return (t > chk_point_t) ? true : false;
+
+  bool chk = (t > chk_point_t) ? true : false;
+  if ((chk) and (right_branch())){
+      scanRight(1,1000);
+  }
+    if ((chk) and (left_branch())){
+      scanLeft(1,1000);
+  }
 }
 
 void handle_edge_cases()
@@ -498,7 +505,7 @@ void handle_edge_cases()
     Serial.println("right branch");
     // // junction or right turn detected
     countA = 0;
-    while (countA < 5400)
+    while (countA < 4200)
     {
       set_forward();
       set_speed(125, 125);
@@ -518,7 +525,7 @@ void handle_edge_cases()
     sharpLeft2(avg_speed);
     cm_counter = 0;
   }
-  else if (allwhite)
+  else if (allwhite())
   {
     bool junction = (verify_checkpoint()) ? false : true;
     level = (junction) ? level : level++;
@@ -527,6 +534,8 @@ void handle_edge_cases()
       junction_detection_count++;
       Serial.println("left turn2");
       sharpLeft2(avg_speed);
+    }else{
+      brake_fast();
     }
   }
 }

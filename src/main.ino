@@ -1,6 +1,7 @@
 #include <sound.h>
 #include <math.h>
 #include <guard_robot.h>
+bool pb_chkpoint= false;
 
 
 void line_following();
@@ -85,7 +86,8 @@ void loop()
     switch (level)
     {
     case 0:
-      line_following(); // change
+    line_following();
+     // change
       // line_following_revised();
       // Serial.println(detect_box_color());
       // Serial.println(detect_path_color());
@@ -93,7 +95,8 @@ void loop()
     //  pick_box();
       break;
     case 1:
-      wall_follow();
+      brake_fast();
+   //   wall_follow();
       break;
     case 2:
       ramp();
@@ -274,8 +277,8 @@ void pick_box()
   brake_fast();
   delay(100);
   sharpLeft2(avg_speed);
-  set_forward();
-  set_speed(avg_speed, avg_speed);
+  // set_forward();
+  // set_speed(avg_speed, avg_speed);
   // countA = 0;
   // while (countA < 4000)
   // {
@@ -301,6 +304,7 @@ void pick_box()
     path_color = detect_path_color();
     ctt++;
   }
+  path_color = "blue";
   align_center();
   delay(1000);
   U_turn();
@@ -342,14 +346,25 @@ void pick_box()
     sharpRight3(avg_speed);
   }
   brake_free();
-  delay(2000);
-  while (not(verify_checkpoint))
+  delay(1000);
+  while (not (pb_chkpoint))
   {
     line_following();
+    pb_chkpoint = (verify_checkpoint()) ? true : false ;
+    // if (allwhite())
+    // {
+    //   delay(200);
+    //   pb_chkpoint = (allwhite()) ? true : false ;
+    // }
   }
   drop_box(4);
   delay(1000);
-  sharpLeft2(avg_speed);
+  if (path_color == "red"){
+      sharpLeft2(avg_speed);
+  }else if(path_color == "blue"){
+    sharpRight3(avg_speed);
+  }
+
   while(allwhite())
   {
     set_forward();
@@ -459,6 +474,44 @@ void wall_follow()
     delay(1000);
     // scanRight(3);
   }
+}
+
+void wallfollowing()
+{
+  int cc = 0;
+  while(allwhite())
+  {
+    set_forward();
+    set_speed(125,125);
+  }
+  brake_fast();
+  delay(500);
+  while(level !=2){
+  line_following();
+  while(obstacle_distance() < 10)
+  { 
+    brake_fast();
+    cc++;
+  }
+  if (cc ==1){
+    scanLeft(1, 1500);
+    while(digitalRead(IR3) == 0){
+      set_forward();
+      set_speed(85,85);
+    }
+    brake_fast();
+    scanLeft(1, 1500);
+  }else if(cc == 2){
+    scanRight(1,1500);
+        while(digitalRead(IR3) == 0){
+      set_forward();
+      set_speed(85,85);
+    }
+    brake_fast();
+    scanRight(1, 1500);
+  }
+  }
+  
 }
 
 // void navigate_sound()
@@ -645,16 +698,13 @@ void avoid_guard_robot()
 
 void ramp()
 {
-    // sharpRight3(125);
-    // go_cms(5);
-    // brake_fast();
-    // delay(1000);
+
     set_forward();
     set_speed(85,85);
 
     while (not(allwhite()))
     {
-        line_following_only();
+        line_following();
     }
     brake_fast();
     delay(1000);
@@ -673,7 +723,6 @@ void ramp()
     }
     brake_fast();
     delay(1000);
-    level =1;
     sharpRight2(100);
     set_forward();
     set_speed(avg_speed, avg_speed);
@@ -761,6 +810,7 @@ void ramp()
     delay(500);
     open_arm(5);
     move_arm(lower_pos);
+    delay(1000);
     set_forward();
     set_speed(avg_speed, avg_speed);
     while (not(verify_checkpoint()))
