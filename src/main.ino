@@ -86,7 +86,7 @@ void loop()
     switch (level)
     {
     case 0:
-    line_following();
+     line_following();
      // change
       // line_following_revised();
       // Serial.println(detect_box_color());
@@ -95,8 +95,15 @@ void loop()
     //  pick_box();
       break;
     case 1:
-      brake_fast();
-   //   wall_follow();
+        // while(allwhite())
+        // {
+        //   set_forward();
+        //   set_speed(125,125);
+        // }
+        // brake_fast();
+        // delay(500);
+      wallfollowing();
+
       break;
     case 2:
       ramp();
@@ -276,7 +283,7 @@ void pick_box()
   }
   brake_fast();
   delay(100);
-  sharpLeft2(avg_speed);
+  sharpRight2(avg_speed);
   // set_forward();
   // set_speed(avg_speed, avg_speed);
   // countA = 0;
@@ -304,7 +311,7 @@ void pick_box()
     path_color = detect_path_color();
     ctt++;
   }
-  path_color = "blue";
+  path_color = "red";
   align_center();
   delay(1000);
   U_turn();
@@ -314,7 +321,7 @@ void pick_box()
   }
   brake_fast();
   delay(100);
-  sharpLeft2(avg_speed);
+  sharpRight2(avg_speed);
   //
 
   delay(2000);
@@ -339,11 +346,11 @@ void pick_box()
   delay(1000);
   if (path_color == box_color)
   {
-    sharpLeft3(avg_speed);
+    sharpRight3(avg_speed);
   }
   else
   {
-    sharpRight3(avg_speed);
+    sharpLeft3(avg_speed);
   }
   brake_free();
   delay(1000);
@@ -509,6 +516,10 @@ void wallfollowing()
     }
     brake_fast();
     scanRight(1, 1500);
+    while(not(allwhite())){
+      line_following();
+    }
+    level = 2;
   }
   }
   

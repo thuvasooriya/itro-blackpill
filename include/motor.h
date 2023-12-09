@@ -46,7 +46,7 @@ Servo lin_servo; // create servo object to control a servo
 int init_rot_pos = 70;
 int init_lin_pos = 180;
 int arm_angle;
-int lower_pos = 20;
+int lower_pos = 25;
 int upper_pos = 180;
 
 String box_color = "";
@@ -143,7 +143,9 @@ void U_turn()
     set_ccw();
     set_speed(avg_speed, avg_speed);
   }
+  brake_fast();
   delay(cm_delay);
+  
 }
 
 void align_center()
@@ -288,7 +290,7 @@ void go_cms(int i)
   while (countA < (400 * i))
   {
     set_forward();
-    set_speed(125, 125);
+    set_speed(117, 125);
   }
   brake_fast();
 }
@@ -310,7 +312,7 @@ void reverse_cms(int i)
   while (countA < (400 * i))
   {
     set_back();
-    set_speed(125, 125);
+    set_speed(117, 125);
   }
   brake_fast();
 }
@@ -325,7 +327,7 @@ void sharpLeft2(int spd)
   }
   brake_fast();
   countA = 0;
-  while (countA < 2900)
+  while (countA < 3300)
   {
     set_ccw();
     set_speed(spd, spd);
@@ -357,7 +359,7 @@ void sharpLeft3(int spd)
 {
   Serial.println("left turn3");
   countA = 0;
-  while (countA < 2900)
+  while (countA < 3300)
   {
     set_ccw();
     set_speed(spd, spd);
@@ -525,20 +527,42 @@ void handle_edge_cases()
     sharpLeft2(avg_speed);
     cm_counter = 0;
   }
-  else if (allwhite())
+  else if (allwhite() and (level == 0))
   {
-    bool junction = (verify_checkpoint()) ? false : true;
-    level = (junction) ? level : level++;
-    if (junction)
-    {
-      junction_detection_count++;
-      Serial.println("left turn2");
-      sharpLeft2(avg_speed);
-    }else{
-      brake_fast();
-    }
+    // bool junction = (verify_checkpoint()) ? false : true;
+    // level = (junction) ? level : level++;
+    // if (junction)
+    // {
+    //   junction_detection_count++;
+    //   Serial.println("left turn2");
+    //   sharpLeft2(avg_speed);
+    // }else{
+    //   brake_fast();
+    // }
+    brake_fast();
+    scanRight(1, 300);
+    go_cms(3);
+    level = 1;
   }
-}
+  else if (allwhite() and (level == 3)){
+    
+      countA = 0;
+    while (countA < 4200)
+    {
+      set_forward();
+      set_speed(125, 125);
+    }
+    brake_fast();
+
+    if (allwhite())
+    {
+      brake_fast();
+    }else{
+      sharpLeft3(125);
+    }
+    cm_counter = 0;
+  }
+  }
 
 // Servo Motor Functions
 
@@ -567,6 +591,9 @@ void lift_box(int dist)
   go_cms(dist);
   delay(500);
   box_color = detect_box_color();
+  if (box_color == "not_detected"){
+    box_color = "blue";
+  }
   open_arm(15);
   delay(500);
   close_arm();
